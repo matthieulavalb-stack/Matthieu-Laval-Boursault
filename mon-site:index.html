@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Matthieu Laval-Boursault</title>
+<style>
+  /* ---------- 1. Base ---------- */
+  :root {
+    --text: #111;
+    --muted: #c4c4c4;
+    --line: #111;
+    --pad: 18px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    /* La taille du texte s'adapte à la hauteur de l'écran → tout tient sans scroll */
+    font-size: clamp(13px, 3vh, 24px);
+    font-size: clamp(13px, 3dvh, 24px);
+    line-height: 1.3;
+    color: var(--text);
+    background: #fff;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+  a:hover, a:focus-visible { color: var(--muted); outline: none; }
+  ul { list-style: none; }
+
+  /* ---------- 2. Grille : texte à gauche, scène à droite ----------
+     Les deux colonnes ont la même hauteur (celle de l'écran) :
+     la scène s'étire donc exactement sur la hauteur de la colonne de texte. */
+  .layout {
+    display: grid;
+    grid-template-columns: 15em minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr);
+    column-gap: 2em;
+    height: 100vh;
+    height: 100dvh;
+    min-height: 560px;
+    padding: var(--pad);
+  }
+
+  /* ---------- 3. Colonne de texte ---------- */
+  .sidebar {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+  .brand { display: block; font-size: 1.27em; line-height: 1.2; }
+
+  .group {
+    border-top: 1px solid var(--line);
+    margin-top: 0.5em;
+    padding-top: 0.25em;
+  }
+  .brand + .group { margin-top: 0.8em; }
+  .group + .group { margin-top: 1em; }
+  .group li a { display: inline-block; }
+  .group li a.active { color: var(--muted); }   /* page en cours */
+
+  /* ---------- 4. Scène ----------
+     Fond bleu-gris clair, nuagé : zones plus pâles, zones plus soutenues,
+     une trace chaude très discrète. Pas de fissures. */
+  .right { position: relative; min-height: 0; }   /* cellule de droite : scène OU page */
+  .stage-wrap {
+    position: absolute; inset: 0;
+    overflow: hidden;
+    background:
+      /* nuages clairs */
+      radial-gradient(ellipse 38% 30% at 17% 60%, rgba(255,255,248,.62), transparent 72%),
+      radial-gradient(ellipse 30% 36% at 74% 20%, rgba(255,255,255,.45), transparent 72%),
+      radial-gradient(ellipse 26% 22% at 48% 88%, rgba(250,252,250,.40), transparent 72%),
+      /* zones plus soutenues */
+      radial-gradient(ellipse 30% 22% at 83% 80%, rgba(112,146,162,.40), transparent 72%),
+      radial-gradient(ellipse 34% 24% at 38% 16%, rgba(138,166,180,.34), transparent 72%),
+      radial-gradient(ellipse 22% 30% at 8% 12%, rgba(120,150,166,.30), transparent 72%),
+      /* trace chaude, comme une coulée de rouille effacée */
+      radial-gradient(ellipse 9% 40% at 66% 48%, rgba(196,160,128,.20), transparent 75%),
+      radial-gradient(ellipse 14% 22% at 32% 64%, rgba(176,134,112,.14), transparent 75%),
+      /* base */
+      linear-gradient(162deg, #cfdde1 0%, #bccdd3 42%, #a9bec7 100%);
+  }
+  /* nuages doux (grandes taches) */
+  .stage-wrap::before {
+    content: "";
+    position: absolute; inset: 0;
+    pointer-events: none;
+    opacity: .55;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='700' height='700'><filter id='m' x='0' y='0' width='100%' height='100%'><feTurbulence type='fractalNoise' baseFrequency='.006 .009' numOctaves='4' seed='7' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/><feComponentTransfer><feFuncR type='linear' slope='1.7' intercept='-.35'/><feFuncG type='linear' slope='1.7' intercept='-.35'/><feFuncB type='linear' slope='1.7' intercept='-.35'/></feComponentTransfer></filter><rect width='100%' height='100%' filter='url(%23m)'/></svg>");
+    background-size: 700px 700px;
+  }
+  /* grain fin par-dessus (en « overlay » : il laisse le blanc des blocs intact) */
+  .stage-wrap::after {
+    content: "";
+    position: absolute; inset: 0;
+    pointer-events: none;
+    opacity: .34;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  }
+  #stage { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+
+  .lang {
+    position: absolute; top: 12px; right: 14px; z-index: 5;
+    display: flex; gap: 10px; font-size: 14px;
+  }
+  .lang button {
+    font: inherit; background: none; border: 0; cursor: pointer;
+    color: rgba(20,36,43,.4);
+  }
+  .lang button.on { color: #14242b; }
+
+  /* ---------- 4 bis. Pages de contenu ----------
+     Quand une page est ouverte (body.is-page), elle recouvre la scène dans
+     le même cadre ; les tentacules sont mis en pause et réapparaissent à
+     l'accueil. Le contenu défile dans le cadre, le menu reste fixe. */
+  body.is-page .stage-wrap { visibility: hidden; }
+  .page {
+    position: absolute; inset: 0;
+    display: none;
+    overflow-y: auto;
+    background: #fff;
+    scrollbar-width: thin;
+  }
+  body.is-page .page { display: block; }
+
+  .page-head {
+    position: sticky; top: 0; z-index: 2;
+    background: #fff;
+    border-bottom: 1px solid var(--line);
+    padding: 0 4em 0.4em 0;
+    min-height: 2.1em;
+  }
+  .page-head h1 { font-size: 1.27em; font-weight: 400; line-height: 1.2; }
+
+  .page-sec { display: none; padding: 1.2em 0 4em; font-size: 0.66em; line-height: 1.4; }
+  .page-sec.on { display: block; }
+  .page-sec a { text-decoration: underline; text-underline-offset: 0.18em; text-decoration-thickness: 1px; }
+  .page-sec a:hover { color: var(--muted); }
+
+  .meta  { margin-bottom: 1.5em; }
+  .meta + .meta, .prose + .prose { margin-top: 1.5em; }
+  .prose { max-width: 38em; }
+  .prose p + p { margin-top: 1em; }
+  .page-sec .btn {
+    display: inline-block; margin-top: 1.6em; padding: 0.35em 1em;
+    border: 1px solid var(--line); text-decoration: none;
+  }
+  .page-sec .btn:hover { background: var(--line); color: #fff; }
+  .credits { margin-top: 2.2em; max-width: 38em; }
+
+  /* rubriques du CV : titre + description à gauche, lieu + année à droite */
+  .group-title { font-size: 1em; font-weight: 400; margin: 2.2em 0 0.6em; }
+  .group-title:first-child { margin-top: 0; }
+  .entry {
+    display: grid; grid-template-columns: minmax(0, 1fr) 15em; column-gap: 2em;
+    padding: 1em 0 1.2em; border-top: 1px solid var(--line); max-width: 56em;
+  }
+  .page-sec > .entry:first-child { border-top: 0; padding-top: 0; }
+  .entry h3 { font-size: 1em; font-weight: 600; }
+  .entry .what p { margin-top: 0.15em; max-width: 36em; }
+  .entry .where { color: #444; }
+
+  /* médias (images, vidéos) : voir le mode d'emploi en commentaire dans le HTML */
+  .media { margin-top: 2em; display: grid; gap: 1.2em; max-width: 56em; }
+  .media img, .media video { display: block; width: 100%; height: auto; }
+  .media iframe { display: block; width: 100%; aspect-ratio: 16 / 9; border: 0; }
+  .media figcaption { margin-top: 0.4em; font-size: 0.85em; color: #444; }
+
+  /* ---------- 5. Mobile : texte en haut, scène dessous, toujours sans scroll ---------- */
+  @media (max-width: 820px) {
+    body { font-size: clamp(11px, 1.9vh, 16px); font-size: clamp(11px, 1.9dvh, 16px); }
+    .layout {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-rows: auto minmax(0, 1fr);
+      row-gap: 14px;
+      min-height: 0;
+    }
+    .entry { grid-template-columns: minmax(0, 1fr); row-gap: 0.4em; }
+    .page-sec { font-size: 0.85em; }
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+
+  <!-- ========== COLONNE DE TEXTE ========== -->
+  <!-- Chaque lien a son propre tentacule -->
+  <aside class="sidebar">
+    <a class="brand" href="#/">Matthieu<br>Laval-Boursault</a>
+
+    <!-- data-page = identifiant de la page (voir les <section class="page-sec"> plus bas) -->
+    <ul class="group">
+      <li><a href="#/crible" data-page="crible">Crible</a></li>
+      <li><a href="#/stress-pre-trauma" data-page="stress-pre-trauma">Stress pré-trauma</a></li>
+      <li><a href="#/zone-d-ombre" data-page="zone-d-ombre">Zone d’ombre</a></li>
+      <li><a href="#/irm-kafkaien" data-page="irm-kafkaien">IRM Kafkaïen</a></li>
+      <li><a href="#/biomorphies" data-page="biomorphies">Biomorphies</a></li>
+    </ul>
+
+    <ul class="group">
+      <li><a href="#/exposition" data-page="exposition">Exposition</a></li>
+      <li><a href="#/performances" data-page="performances">Performances</a></li>
+      <li><a href="#/residence-radio" data-page="residence-radio">Résidence radio</a></li>
+      <li><a href="#/curation" data-page="curation">Curation</a></li>
+      <li><a href="#/programmation" data-page="programmation">Programmation</a></li>
+    </ul>
+
+    <ul class="group">
+      <!-- le PDF doit être dans le même dossier que index.html -->
+      <li><a href="portfolio-laval-boursault.pdf" target="_blank" rel="noopener">Portfolio</a></li>
+      <li><a href="#/contacts" data-page="contacts">Contacts</a></li>
+      <li><a href="#/a-propos" data-page="a-propos">À propos</a></li>
+      <li><a href="https://www.instagram.com/ex.bordure/" target="_blank" rel="noopener">Instagram</a></li>
+    </ul>
+  </aside>
+
+  <!-- ========== CELLULE DE DROITE : scène (accueil) OU page ========== -->
+  <div class="right">
+    <div class="lang">
+      <button type="button" class="on" data-lang="fr">FR</button>
+      <button type="button" data-lang="en">EN</button>
+    </div>
+
+    <!-- Accueil : les tentacules -->
+    <div class="stage-wrap" id="stageWrap">
+      <canvas id="stage"></canvas>
+    </div>
+
+    <!-- Pages -->
+    <main class="page" id="page">
+      <header class="page-head"><h1 id="pageTitle"></h1></header>
+
+      <!--
+        ================================================================
+        COMMENT AJOUTER DU TEXTE, DES IMAGES, DES VIDÉOS
+        ================================================================
+        Chaque page est un bloc <section class="page-sec" data-id="..." data-title="...">.
+        Pour ajouter du contenu, on colle simplement du HTML dans le bloc voulu.
+
+        Un paragraphe :
+          <div class="prose"><p>Mon texte…</p></div>
+
+        Une image (mettre le fichier dans un dossier « images » à côté de index.html) :
+          <div class="media">
+            <figure><img src="images/crible/01.jpg" alt="Description" loading="lazy">
+              <figcaption>Légende, crédit photo, année</figcaption></figure>
+          </div>
+
+        Une vidéo en ligne (YouTube : remplacer VIDEO_ID par la fin du lien) :
+          <div class="media">
+            <iframe src="https://www.youtube.com/embed/VIDEO_ID" allowfullscreen loading="lazy"></iframe>
+          </div>
+
+        Une vidéo en fichier (placée dans « videos ») :
+          <div class="media">
+            <video src="videos/crible.mp4" controls playsinline preload="metadata"></video>
+          </div>
+        ================================================================
+      -->
+
+      <!-- ===================== PROJETS ===================== -->
+
+      <section class="page-sec" data-id="crible" data-title="Crible">
+        <p class="meta">Dispositif live immersif<br>Programme, casque VR/AR, système son<br>2026</p>
+        <div class="prose">
+          <p>Transformation (live) des flux réseau Wi-Fi perçus (capture du trafic en direct) en paysage sonore et visuel (via Ableton Live et TouchDesigner), rendant perceptible le maillage d’ondes qui traverse nos corps et environnements.</p>
+          <p>En captant et convertissant en live les paquets du réseau en matière musicale et en les associant à des visualisations réactives, il propose une expérience immersive qui révèle à la fois la dimension sensible et la portée stratégique et politique de ces flux.</p>
+          <p>La dimension sonore est diffusée sur un dispositif d’enceintes en quadriphonie, chaque canal diffusant une piste unique. La visualisation est régie par les flux entrants OSC (forme) et les variations sur son (attracteurs) et s’observe par l’intermédiaire d’un casque VR/AR. La vision en AR est en cours de développement.</p>
+        </div>
+        <p><a class="btn" href="https://www.youtube.com/watch?v=InI4PCG1VZI" target="_blank" rel="noopener">Extrait vidéo</a></p>
+        <!-- + images / vidéos de Crible ici -->
+      </section>
+
+      <section class="page-sec" data-id="stress-pre-trauma" data-title="Stress pré-trauma">
+        <p class="meta">Dispositif audiovisuel<br>Blender, Adobe Premiere and Ableton Live 12<br>Quatre écrans et système son<br>2026</p>
+        <p class="meta">Diffusion : ENS Paris-Saclay, 2026</p>
+        <div class="prose">
+          <p>Une installation audiovisuelle composée de plusieurs écrans aux fonctions complémentaires. À partir d’un ensemble d’entretiens réalisés dans différents quartiers de Paris, le dispositif met en scène une expérience d’écoute et de navigation à travers des récits individuels liés au contexte politique français et l’appréhension de celui-ci.</p>
+        </div>
+        <p><a class="btn" href="https://youtu.be/wUQfZCPS-U8" target="_blank" rel="noopener">Extrait vidéo</a></p>
+        <!-- + images / vidéos de Stress pré-trauma ici -->
+      </section>
+
+      <section class="page-sec" data-id="zone-d-ombre" data-title="Zone d’ombre">
+        <p class="meta">Court-métrage<br>Durée : 6min48<br>2025</p>
+        <div class="prose">
+          <p>Le court-métrage explore la manière dont un individu intériorise ce qu’il ne parvient à formuler. Cette intériorité est un enfermement, qui prend forme dans l’inconscient. Le silence produit ses propres démons : il accumule la frustration, la colère, qui se frayent un chemin dans l’esprit.</p>
+          <p>Synopsis :<br>Zone d’ombre traduit une expérience individuelle, à dimension collective. L’expérience intime est un point d’entrée vers une réflexion sur notre époque. La peur de ne plus se reconnaître, de détourner le regard sur sa situation et celle d’autrui : une angoisse existentielle, face à des systèmes et logiques économiques, sociales et politiques qui dépassent l’individu·e.</p>
+        </div>
+        <p><a class="btn" href="https://drive.google.com/file/d/1Jx_lh9IggEYmZMBYhxMUsa3XhwE7j9qn/view?usp=sharing" target="_blank" rel="noopener">Visionner le court-métrage</a></p>
+        <p class="credits">
+          Réalisation et scénario : Matthieu Laval<br>
+          Chef opérateur et montage : Théo Clamart<br>
+          Image : Jean Lecerf, Stanislas Lachaux et Théo Clamart<br>
+          Modélisation et animation 3D créature : Eloi Vidal<br>
+          Animation et environnements 3D : Louis Guichard<br>
+          Mixage son : Vasco Vassard<br>
+          Ingénierie sonore voix-off : Florent Lavallée
+        </p>
+        <!-- + images / vidéos de Zone d’ombre ici -->
+      </section>
+
+      <section class="page-sec" data-id="irm-kafkaien" data-title="IRM Kafkaïen">
+        <p class="meta">TouchDesigner<br>2025</p>
+        <div class="prose">
+          <p>Une série de vidéos générée à partir de plusieurs extraits du livre <em>Le Terrier</em> de Franz Kafka.</p>
+          <p>Une performance avec lecture des extraits sélectionnés actionnait en direct les vidéos grâce à la détection de mots-clés prononcés. Un algorithme Python connecté à TouchDesigner assurait cette activation en temps réel.</p>
+          <p>Une représentation interactive des paysages de l’esprit du protagoniste, et un témoignage de son sentiment d’enfermement.</p>
+        </div>
+        <!-- + images / vidéos de IRM Kafkaïen ici
+             Légendes du portfolio : « Vidéos TouchDesigner de la performance IRM Kafkaïen à ENS Paris-Saclay, 2025 »
+             et « Performance IRM Kafkaïen au Fablab de l’ENS Paris-Saclay, 2025 » -->
+      </section>
+
+      <section class="page-sec" data-id="biomorphies" data-title="Biomorphies">
+        <p class="meta">Installation multimédias<br>2026</p>
+        <div class="prose">
+          <p>Moires est une installation documentaire. À partir d’enregistrements ambisoniques réalisés sur des territoires urbains, périurbains et ruraux, elle propose une écoute contemplative.</p>
+          <p>La classe du son (événements urbains dont humains et naturels) en détermine la forme, l’énergie, l’amplitude, et la direction d’arrivée la position spatiale de la trace. La ligne devient une mémoire typologique du territoire parcouru, une cartographie temporelle et spatiale de l’environnement sonore.</p>
+          <p>Le dispositif met en regard des contextes urbains, territoires périphériques, zones périurbaines et espaces ruraux pour observer comment l’activité humaine altère un paysage sonore.</p>
+        </div>
+        <!-- + images / vidéos ici
+             Légende du portfolio : « Représentations 3D réalisées sur Blender » -->
+      </section>
+
+      <!-- ===================== RUBRIQUES (CV) ===================== -->
+
+      <section class="page-sec" data-id="exposition" data-title="Exposition">
+        <div class="entry">
+          <div class="what">
+            <h3>Traverser l’entre</h3>
+            <p>Cur. Benjamin Gaulon</p>
+            <p>Exposition collective avec Lana Charron, Solal Corcos, Suzie Giroudon, Manon Gorteau, Agathe Janeczko, Samy Khemmar, Martin Leblon, Wonjin Park et Tania Safa</p>
+            <p>à la Scène de recherche Paris-Saclay (91)</p>
+          </div>
+          <div class="where">ENS Paris-Saclay &amp; La scène de recherche<br>2026</div>
+        </div>
+      </section>
+
+      <section class="page-sec" data-id="performances" data-title="Performances">
+        <div class="entry">
+          <div class="what">
+            <h3>IRM Kafkaïen</h3>
+            <p>Performance avec lecture d’extraits du <em>Terrier</em> de Franz Kafka : les vidéos étaient actionnées en direct grâce à la détection de mots-clés prononcés. <a href="#/irm-kafkaien">Voir le projet</a></p>
+            <p>au Fablab de l’ENS Paris-Saclay (91)</p>
+          </div>
+          <div class="where">ENS Paris-Saclay<br>2025</div>
+        </div>
+        <div class="entry">
+          <div class="what">
+            <h3>Discussions et live</h3>
+            <p>Performance de 1h live musical et échange avec des artistes en direct de Pologne, sur le sujet du fascisme en Europe</p>
+            <p>à la Station Gare des mines (75)</p>
+          </div>
+          <div class="where">Station Station<br>2025</div>
+        </div>
+      </section>
+
+      <section class="page-sec" data-id="residence-radio" data-title="Résidence radio">
+        <h2 class="group-title">Résidence et atelier</h2>
+        <div class="entry">
+          <div class="what">
+            <h3>Résidence de recherche et création</h3>
+            <p>Développement d’un projet de recherche sur les ondes wifi, leur matérialité et leur sonorisation</p>
+            <p>à l’IUT de Cachan (94)</p>
+          </div>
+          <div class="where">Institut des technologies de Cachan<br>Novembre 2026 (à venir)</div>
+        </div>
+        <div class="entry">
+          <div class="what">
+            <h3>Atelier d’expérimentation sonore</h3>
+            <p>Recherche et création collective entre artistes autour de l’expérimentation sonore, avec un encadrement par Nicolas Montgermont et Elie Bolard</p>
+            <p>à l’Institut français de Palerme (Italie)</p>
+          </div>
+          <div class="where">Centre Wallonie-Bruxelles<br>2026</div>
+        </div>
+
+        <h2 class="group-title">Radios</h2>
+        <div class="entry">
+          <div class="what">
+            <h3>Discussions et diffusion live</h3>
+            <p>Restitution du programme “Bruit des moteurs” du Centre Wallonie-Bruxelles et de l’Institut français</p>
+            <p>à l’European Palermo Youth Center (EPYC) (Palerme, Italie)</p>
+          </div>
+          <div class="where">Radio Dopo<br>2026</div>
+        </div>
+        <div class="entry">
+          <div class="what">
+            <h3>Résidence</h3>
+            <p>Passage régulier sur la radio avec une dominante autour de la musique ambient et expérimentale</p>
+            <p>sur la web radio Radio Sofa</p>
+          </div>
+          <div class="where">Radio Sofa<br>2026</div>
+        </div>
+      </section>
+
+      <section class="page-sec" data-id="curation" data-title="Curation">
+        <div class="entry">
+          <div class="what">
+            <h3>Affabulation contestataire</h3>
+            <p>Exposition collective avec Maxim Zmeyev, Clara Montrieul, Arthur Dujols-Luquet, Yvonne Lui et Lucile Ometz</p>
+            <p>à La Cité fertile (93)</p>
+          </div>
+          <div class="where">Chute Libre<br>2026</div>
+        </div>
+        <div class="entry">
+          <div class="what">
+            <h3>Véridiction</h3>
+            <p>Exposition collective avec Valentine Lederer, Toscane Thieffry, Augustin Jansem et Alexia Dreschmann</p>
+            <p>à La Cité fertile (93)</p>
+          </div>
+          <div class="where">Chute Libre<br>2025</div>
+        </div>
+      </section>
+
+      <section class="page-sec" data-id="programmation" data-title="Programmation">
+        <div class="entry">
+          <div class="what">
+            <h3>Solidarity with the Belarusian people and fight against fascism</h3>
+            <p>avec dj sets de Samogulov, Marabou, Ex bordure et beigrek</p>
+            <p>aux Amarres (75)</p>
+          </div>
+          <div class="where">Wooboodoo<br>2025</div>
+        </div>
+        <div class="entry">
+          <div class="what">
+            <h3>Archiver le présent</h3>
+            <p>avec live et dj sets de H20, Fatale Furylax et beigrek</p>
+            <p>à La Cité fertile (93)</p>
+          </div>
+          <div class="where">Chute Libre<br>2025</div>
+        </div>
+
+        <h2 class="group-title">Autres programmations</h2>
+        <div class="entry">
+          <div class="what">
+            <h3>Président</h3>
+            <p>Direction artistique et programmation des formats et évènements pluridisciplinaires organisés par l’association.</p>
+            <p>Chute Libre est un collectif rassemblant artistes plasticien·ne·s, musicien·ne·s, vidéastes et danseur·euse·s autour de la création et de l’engagement citoyen. Dédiée au soutien de l’émergence artistique, il met en avant les projets de ses membres et collabore avec des acteurs associatifs locaux. Une dizaine d’événements organisés dans des lieux alternatifs : concerts gratuits à Place des Fêtes, DJ sets à la Tour Orion, exposition au Sample, etc.</p>
+          </div>
+          <div class="where">Chute Libre<br>2022 – aujourd’hui</div>
+        </div>
+        <div class="entry">
+          <div class="what">
+            <h3>Responsable partenariats</h3>
+            <p>Programmation et production d’un événement pendant le festival d’Avignon (ateliers et tables rondes), en partenariat avec le festival Off Avignon et le ministère de la Culture</p>
+          </div>
+          <div class="where">Proarti<br>2022 – 2025</div>
+        </div>
+        <div class="entry">
+          <div class="what">
+            <h3>Vice-Président</h3>
+            <p>Programmation de tables rondes (TedX, Mardis de l’innovation et SimTalk)</p>
+          </div>
+          <div class="where">Sorbonne Innovation et Technologies<br>2021</div>
+        </div>
+      </section>
+
+      <!-- ===================== INFOS ===================== -->
+
+      <section class="page-sec" data-id="a-propos" data-title="À propos">
+        <div class="prose">
+          <p>1997</p>
+          <p>Diplômé en Recherche et création à l’ENS Paris-Saclay, et en Innovation, arts et industries créatives de l’Université Paris 1 Panthéon-Sorbonne.</p>
+          <p>Artiste autodidacte, je travaille au croisement des arts plastiques et numériques, à travers la musique et l’image de synthèse. Ma pratique cherche à rendre perceptibles au moyen d’installation et de représentations biomorphiques des phénomènes qui échappent à l’attention du quotidien.</p>
+        </div>
+      </section>
+
+      <section class="page-sec" data-id="contacts" data-title="Contacts">
+        <div class="prose">
+          <p>Matthieu Laval-Boursault</p>
+          <p>
+            <a href="tel:+33699271585">06 99 27 15 85</a><br>
+            <a href="mailto:matthieulavalb@gmail.com">matthieulavalb@gmail.com</a>
+          </p>
+          <p><a href="https://www.instagram.com/ex.bordure/" target="_blank" rel="noopener">Instagram : @ex.bordure</a></p>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<script>
+/* =====================================================
+   A. Bouton de langue (visuel uniquement pour l'instant)
+   ===================================================== */
+document.querySelectorAll('.lang button').forEach(b => {
+  b.addEventListener('click', () => {
+    document.querySelectorAll('.lang button').forEach(x => x.classList.remove('on'));
+    b.classList.add('on');
+  });
+});
+
+/* =====================================================
+   A2. Navigation entre les pages (sans rechargement)
+   - le menu pointe vers #/identifiant (ex. #/crible)
+   - la section <section class="page-sec" data-id="identifiant"> s'affiche
+   - l'accueil (#/ ou rien) réaffiche les tentacules
+   ===================================================== */
+(() => {
+  const secs    = [...document.querySelectorAll('.page-sec')];
+  const page    = document.getElementById('page');
+  const titleEl = document.getElementById('pageTitle');
+  const navs    = [...document.querySelectorAll('.sidebar a[data-page]')];
+  const SITE    = 'Matthieu Laval-Boursault';
+
+  function route() {
+    const id  = decodeURIComponent(location.hash.replace(/^#\/?/, ''));
+    const sec = secs.find(s => s.dataset.id === id) || null;
+    document.body.classList.toggle('is-page', !!sec);
+    secs.forEach(s => s.classList.toggle('on', s === sec));
+    navs.forEach(a => a.classList.toggle('active', !!sec && a.dataset.page === id));
+    titleEl.textContent = sec ? sec.dataset.title : '';
+    document.title = sec ? sec.dataset.title + ' — ' + SITE : SITE;
+    page.scrollTop = 0;
+  }
+  window.addEventListener('hashchange', route);
+  route();
+})();
+
+/* =====================================================
+   B. Tentacules faits de blocs blancs anarchiques reliés par des tiges de fer
+   - 1 tentacule par lien du menu
+   - chaque tentacule = une colonne vertébrale (chaîne 3D) sur laquelle
+     sont enfilés des BLOCS : prismes à section polygonale irrégulière
+     (4 à 8 côtés), aux deux extrémités déformées, vrillées et décalées
+   - blocs blancs, à plat (aucun ombrage), cernés d'un trait d'encre
+   - ils suivent la souris, sans jamais sortir du cadre
+   - au survol d'un lien : SON tentacule pointe vers lui,
+     tous les autres se dispersent dans les autres directions
+   ===================================================== */
+(() => {
+  const wrap   = document.getElementById('stageWrap');
+  const canvas = document.getElementById('stage');
+  const ctx = canvas.getContext('2d');
+  const links = [...document.querySelectorAll('.sidebar li a')];
+
+  // ---- Réglages : mouvement ----
+  const SEGS    = 14;    // nombre de blocs par tentacule
+  const FOCAL   = 900;   // force de la perspective
+  const EASE    = 0.10;  // réactivité de la pointe (0.02 lent → 0.3 nerveux)
+  const MARGIN  = 8;     // marge (px) entre les tentacules et le bord du cadre
+  const GAP     = 0.55;  // angle (radians) laissé vide autour du tentacule choisi
+  const SPREAD_REACH = 0.8; // portée max des tentacules dispersés (0 à 1)
+
+  // ---- Réglages : morphologie des blocs ----
+  const ANARCHY   = 1.0;  // 0 = blocs assez réguliers, 1 = anarchiques, 1.5 = très cassés
+  const TILT      = 0.30; // inclinaison aléatoire de chaque bloc
+  const LAT       = 0.22; // décalage latéral des blocs (fraction de leur rayon)
+  const LEN_MIN   = 0.40; // longueur d'un bloc le long du tentacule (fraction de l'espacement)
+  const LEN_MAX   = 0.62; // → le reste est l'espace occupé par les tiges de fer
+  const TAPER     = 0.62; // amincissement vers la pointe (0 = aucun)
+  const STUB_CHANCE = 0.38; // proportion de blocs avec un fer qui dépasse
+  const CLAMP_K   = 2.2;  // marge de sécurité pour rester dans le cadre
+
+  // ---- Style ----
+  const BLOCK = '#ffffff';  // blocs blancs, à plat
+  const INK   = '#1a1a19';  // trait d'encre
+  const IRON  = '#262321';  // fers à béton
+
+  const COUNT = links.length;
+  let W = 0, H = 0, cx, cy, dpr, segLen, baseR, rodW, tentacles = [], R = [], RB = [];
+  let hovered = -1;                       // index du lien survolé (-1 = aucun)
+  const mouse  = { x: 0, y: 0, last: -99999 };
+  const smooth = { x: 0, y: 0 };
+
+  const rnd = (a, b) => a + Math.random() * (b - a);
+  const proj = z => FOCAL / (FOCAL + Math.max(z, -FOCAL * 0.8));
+
+  // ---- Survol des liens ----
+  links.forEach((a, i) => {
+    const on  = () => { hovered = i; };
+    const off = () => { if (hovered === i) hovered = -1; };
+    a.addEventListener('mouseenter', on);
+    a.addEventListener('mouseleave', off);
+    a.addEventListener('focus', on);
+    a.addEventListener('blur', off);
+  });
+
+  // =====================================================
+  //  Génère un bloc anarchique
+  //  Un bloc = deux anneaux de n sommets (A à l'arrière, B à l'avant),
+  //  chacun avec ses propres rayons, un décalage, une torsion et des
+  //  sommets décalés le long de l'axe. Faces : 2 bouchons + n côtés.
+  // =====================================================
+  function makeBlock() {
+    const n = [4, 5, 5, 6, 6, 7, 7, 8][Math.floor(Math.random() * 8)];
+    const A = ANARCHY;
+
+    // une extrémité parfois très rétrécie → blocs en coin, en biseau, en pointe
+    const taperA = Math.random() < 0.28 * A ? rnd(0.25, 0.6) : rnd(0.85, 1.15);
+    const taperB = Math.random() < 0.38 * A ? rnd(0.2, 0.6)  : rnd(0.85, 1.15);
+    const twist  = rnd(-0.7, 0.7) * A;                       // torsion entre les deux extrémités
+    const shear  = [rnd(-0.55, 0.55) * A, rnd(-0.55, 0.55) * A]; // décalage de l'extrémité B
+    const wx = rnd(0.72, 1.12), wy = rnd(0.58, 1.0);
+
+    // coordonnées locales en unités : x,y ∈ rayon du bloc, z ∈ demi-longueur
+    const loc = new Float32Array(6 * n * 1);
+    const base = [];
+    for (let k = 0; k < n; k++) base.push(((k + rnd(-0.38, 0.38) * A) / n) * Math.PI * 2);
+    base.sort((a, b) => a - b);
+
+    for (let k = 0; k < n; k++) {
+      const rA = rnd(1 - 0.5 * A, 1 + 0.25 * A) * taperA;
+      const rB = rnd(1 - 0.5 * A, 1 + 0.25 * A) * taperB;
+      const aA = base[k], aB = base[k] + twist;
+      // anneau A (arrière)
+      loc[3 * k]     = Math.cos(aA) * rA * wx;
+      loc[3 * k + 1] = Math.sin(aA) * rA * wy;
+      loc[3 * k + 2] = -(1 + rnd(-0.45, 0.45) * A);
+      // anneau B (avant)
+      loc[3 * (n + k)]     = Math.cos(aB) * rB * wx + shear[0];
+      loc[3 * (n + k) + 1] = Math.sin(aB) * rB * wy + shear[1];
+      loc[3 * (n + k) + 2] = 1 + rnd(-0.45, 0.45) * A;
+    }
+
+    // faces (indices de sommets)
+    const faces = [];
+    faces.push(Array.from({ length: n }, (_, k) => k));                // bouchon arrière
+    faces.push(Array.from({ length: n }, (_, k) => n + k));            // bouchon avant
+    for (let k = 0; k < n; k++) faces.push([k, (k + 1) % n, n + (k + 1) % n, n + k]);
+
+    const rod = () => ({
+      ka: Math.floor(rnd(0, 8)), fa: rnd(0.12, 0.5),       // point d'attache sur le bloc amont
+      kb: Math.floor(rnd(0, 8)), fb: rnd(0.12, 0.5),       // point d'attache sur le bloc aval
+      bend: [rnd(-1, 1), rnd(-1, 1), rnd(-1, 1)]           // léger gauchissement du fer
+    });
+
+    return {
+      n, nv: 2 * n, loc, faces,
+      len: rnd(LEN_MIN, LEN_MAX),
+      off: rnd(-0.12, 0.12),                               // décalage le long du tentacule
+      lat: [rnd(-LAT, LAT), rnd(-LAT, LAT)],               // décalage latéral
+      tilt: [rnd(-0.5, 0.5), rnd(-0.5, 0.5), rnd(-0.5, 0.5)],
+      roll: rnd(0, 6.283), rollA: rnd(0.04, 0.22), rollW: rnd(-0.6, 0.6),
+      rods: [rod(), rod()],
+      stub: Math.random() < STUB_CHANCE
+        ? { ang: rnd(0, 6.283), len: rnd(0.45, 0.85), hook: Math.random() < 0.5 ? 1 : -1 }
+        : null,
+      // tampons réutilisés à chaque image
+      w: new Float32Array(48),   // sommets (monde)
+      s: new Float32Array(32),   // sommets (écran)
+      cA: [0, 0, 0], cB: [0, 0, 0],                        // centres des deux extrémités
+      c: [0, 0, 0], t: [0, 0, 1], u: [1, 0, 0], v: [0, 1, 0], hl: 0
+    };
+  }
+
+  // ---- Initialisation / redimensionnement ----
+  function resize() {
+    const r = wrap.getBoundingClientRect();
+    if (Math.abs(r.width - W) < 1 && Math.abs(r.height - H) < 1) return;
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = r.width; H = r.height;
+    canvas.width = W * dpr; canvas.height = H * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    cx = W / 2; cy = H / 2;
+
+    const m = Math.min(W, H);
+    segLen = m * 0.058;
+    baseR  = m * 0.034;
+    rodW   = Math.max(1.8, m * 0.0034);
+    RB = Array.from({ length: SEGS }, (_, j) => baseR * Math.pow(1 - TAPER * j / (SEGS - 1), 0.8) + 2);
+    R  = RB.map(v => v * CLAMP_K);           // rayon pris en compte pour rester dans le cadre
+
+    tentacles = links.map((_, i) => {
+      const a = (i / COUNT) * Math.PI * 2;
+      const p = [];
+      for (let j = 0; j < SEGS; j++) {
+        p.push({ x: Math.cos(a) * j * segLen * 0.6, y: Math.sin(a) * j * segLen * 0.6, z: 0 });
+      }
+      return {
+        p,
+        tip: { ...p[SEGS - 1] },
+        blocks: Array.from({ length: SEGS }, makeBlock)
+      };
+    });
+  }
+  // la scène suit la taille de son conteneur (fenêtre, polices chargées, etc.)
+  new ResizeObserver(resize).observe(wrap);
+
+  // ---- Souris / doigt ----
+  function onMove(e) {
+    const pt = e.touches ? e.touches[0] : e;
+    const r = canvas.getBoundingClientRect();
+    mouse.x = pt.clientX - r.left - cx;
+    mouse.y = pt.clientY - r.top - cy;
+    mouse.last = performance.now();
+  }
+  window.addEventListener('pointermove', onMove);
+  window.addEventListener('touchmove', onMove, { passive: true });
+
+  // ---- Géométrie ----
+  function pull(a, b) {                    // place a à distance segLen de b
+    const dx = a.x - b.x, dy = a.y - b.y, dz = a.z - b.z;
+    const d = Math.hypot(dx, dy, dz) || 1e-6;
+    const k = segLen / d;
+    a.x = b.x + dx * k; a.y = b.y + dy * k; a.z = b.z + dz * k;
+  }
+
+  // Garde un point (et son bloc de rayon r) à l'intérieur du cadre visible
+  function clampToFrame(q, r) {
+    q.z = Math.max(-250, Math.min(250, q.z));
+    const sc = FOCAL / (FOCAL + q.z);
+    const mx = Math.max(0, (W / 2 - MARGIN) / sc - r);
+    const my = Math.max(0, (H / 2 - MARGIN) / sc - r);
+    q.x = Math.max(-mx, Math.min(mx, q.x));
+    q.y = Math.max(-my, Math.min(my, q.y));
+  }
+
+  // ---- Solveur FABRIK (base fixe, pointe = cible, tout reste dans le cadre) ----
+  function solve(T) {
+    const P = T.p, n = P.length;
+    for (let it = 0; it < 4; it++) {
+      P[n - 1].x = T.tip.x; P[n - 1].y = T.tip.y; P[n - 1].z = T.tip.z;
+      for (let j = n - 2; j >= 1; j--) { pull(P[j], P[j + 1]); clampToFrame(P[j], R[j]); }
+      pull(P[0], P[1]);
+      P[0].x = 0; P[0].y = 0; P[0].z = 0;
+      for (let j = 1; j < n; j++) { pull(P[j], P[j - 1]); clampToFrame(P[j], R[j]); }
+    }
+  }
+
+  // ---- Direction vers un lien du menu (angle, depuis le centre de la scène) ----
+  function linkAngle(i) {
+    const cr = canvas.getBoundingClientRect();
+    const lr = links[i].getBoundingClientRect();
+    const dx = lr.right - (cr.left + cx);                    // bout du texte du lien
+    const dy = lr.top + lr.height / 2 - (cr.top + cy);
+    return Math.atan2(dy, dx);
+  }
+
+  // Distance maximale atteignable dans une direction sans toucher le cadre
+  function maxReach(ux, uy) {
+    const tx = Math.abs(ux) > 1e-4 ? (W / 2 - MARGIN - R[SEGS - 1]) / Math.abs(ux) : Infinity;
+    const ty = Math.abs(uy) > 1e-4 ? (H / 2 - MARGIN - R[SEGS - 1]) / Math.abs(uy) : Infinity;
+    return Math.min(tx, ty, segLen * (SEGS - 1) * 0.97);
+  }
+
+  // ---- Mise à jour ----
+  function update(t) {
+    // Souris inactive > 3 s : mouvement automatique
+    let tx = mouse.x, ty = mouse.y;
+    if (performance.now() - mouse.last > 3000) {
+      tx = Math.cos(t * 0.5) * W * 0.28;
+      ty = Math.sin(t * 0.7) * H * 0.22;
+    }
+    smooth.x += (tx - smooth.x) * 0.08;
+    smooth.y += (ty - smooth.y) * 0.08;
+
+    const pointing = hovered !== -1;
+    const hAngle = pointing ? linkAngle(hovered) : 0;
+
+    tentacles.forEach((T, i) => {
+      let tgt, calm = 1;
+
+      if (pointing && i === hovered) {
+        // le tentacule concerné : droit vers son lien, jusqu'au bord du cadre
+        const ux = Math.cos(hAngle), uy = Math.sin(hAngle);
+        const reach = maxReach(ux, uy);
+        tgt = { x: ux * reach, y: uy * reach, z: 0 };
+        calm = 0.2;
+      } else if (pointing) {
+        // les autres : répartis sur le reste du cercle, loin de la direction choisie
+        const k = (i - hovered + COUNT) % COUNT - 1;          // 0 … COUNT-2
+        const n = Math.max(1, COUNT - 2);
+        const ang = hAngle + GAP + (k / n) * (Math.PI * 2 - 2 * GAP);
+        const ux = Math.cos(ang), uy = Math.sin(ang);
+        const reach = maxReach(ux, uy) * SPREAD_REACH * (0.65 + 0.35 * ((k * 0.618) % 1));
+        tgt = { x: ux * reach, y: uy * reach, z: Math.sin(k * 2.3) * 90 };
+        calm = 0.6;
+      } else {
+        // repos : grappe autour du curseur
+        const ang = t * 0.6 + (i / COUNT) * Math.PI * 2;
+        const rad = 95 + 70 * Math.sin(t * 0.9 + i * 1.7);
+        tgt = {
+          x: smooth.x + Math.cos(ang) * rad,
+          y: smooth.y + Math.sin(ang) * rad,
+          z: Math.sin(t * 0.8 + i * 2.1) * 180
+        };
+      }
+
+      const e = pointing ? 0.08 : EASE;
+      T.tip.x += (tgt.x - T.tip.x) * e;
+      T.tip.y += (tgt.y - T.tip.y) * e;
+      T.tip.z += (tgt.z - T.tip.z) * e;
+      clampToFrame(T.tip, R[SEGS - 1]);
+
+      // Tremblement organique le long du corps
+      for (let j = 1; j < SEGS - 1; j++) {
+        const q = T.p[j];
+        q.x += Math.sin(t * 2.0 + j * 0.5 + i) * 0.6 * calm;
+        q.y += Math.cos(t * 1.7 + j * 0.45 + i * 2) * 0.6 * calm;
+        q.z += Math.sin(t * 1.3 + j * 0.6 + i * 3) * 0.8 * calm;
+      }
+      solve(T);
+    });
+  }
+
+  // =====================================================
+  //  Construction des blocs (repère local + sommets déformés)
+  // =====================================================
+  function buildBlock(T, j, t) {
+    const P = T.p, g = T.blocks[j], r = RB[j];
+    const a = P[Math.max(j - 1, 0)], b = P[Math.min(j + 1, SEGS - 1)];
+
+    // tangente au tentacule + inclinaison propre au bloc
+    let tx = b.x - a.x, ty = b.y - a.y, tz = b.z - a.z;
+    let l = Math.hypot(tx, ty, tz) || 1; tx /= l; ty /= l; tz /= l;
+    tx += g.tilt[0] * TILT; ty += g.tilt[1] * TILT; tz += g.tilt[2] * TILT;
+    l = Math.hypot(tx, ty, tz) || 1; tx /= l; ty /= l; tz /= l;
+
+    // repère (u, v) perpendiculaire à la tangente
+    let rx = 0, ry = 1, rz = 0;
+    if (Math.abs(ty) > 0.9) { rx = 1; ry = 0; }
+    let ux = ty * rz - tz * ry, uy = tz * rx - tx * rz, uz = tx * ry - ty * rx;
+    l = Math.hypot(ux, uy, uz) || 1; ux /= l; uy /= l; uz /= l;
+    const vx = ty * uz - tz * uy, vy = tz * ux - tx * uz, vz = tx * uy - ty * ux;
+
+    // rotation lente du bloc autour de l'axe du tentacule
+    const ang = g.roll + Math.sin(t * g.rollW + g.roll) * g.rollA;
+    const ca = Math.cos(ang), sa = Math.sin(ang);
+    const U = [ux * ca + vx * sa, uy * ca + vy * sa, uz * ca + vz * sa];
+    const V = [-ux * sa + vx * ca, -uy * sa + vy * ca, -uz * sa + vz * ca];
+
+    const hl = segLen * g.len * 0.5;
+    const o = g.off * segLen;
+    const c0 = P[j].x + tx * o + (U[0] * g.lat[0] + V[0] * g.lat[1]) * r;
+    const c1 = P[j].y + ty * o + (U[1] * g.lat[0] + V[1] * g.lat[1]) * r;
+    const c2 = P[j].z + tz * o + (U[2] * g.lat[0] + V[2] * g.lat[1]) * r;
+
+    g.t[0] = tx; g.t[1] = ty; g.t[2] = tz;
+    g.u = U; g.v = V; g.hl = hl;
+    g.c[0] = c0; g.c[1] = c1; g.c[2] = c2;
+
+    const w = g.w, s = g.s, loc = g.loc, n = g.n;
+    let ax = 0, ay = 0, az = 0, bx = 0, by = 0, bz = 0;
+    for (let i = 0; i < g.nv; i++) {
+      const lx = loc[3 * i] * r, ly = loc[3 * i + 1] * r, lz = loc[3 * i + 2] * hl;
+      const X = c0 + U[0] * lx + V[0] * ly + tx * lz;
+      const Y = c1 + U[1] * lx + V[1] * ly + ty * lz;
+      const Z = c2 + U[2] * lx + V[2] * ly + tz * lz;
+      w[3 * i] = X; w[3 * i + 1] = Y; w[3 * i + 2] = Z;
+      const ps = proj(Z);
+      s[2 * i] = cx + X * ps; s[2 * i + 1] = cy + Y * ps;
+      if (i < n) { ax += X; ay += Y; az += Z; } else { bx += X; by += Y; bz += Z; }
+    }
+    g.cA[0] = ax / n; g.cA[1] = ay / n; g.cA[2] = az / n;
+    g.cB[0] = bx / n; g.cB[1] = by / n; g.cB[2] = bz / n;
+  }
+
+  // point d'attache d'un fer sur l'une des extrémités d'un bloc :
+  // entre le centre de l'extrémité et l'un de ses sommets → toujours sur la face
+  function capPoint(g, side, k, f) {
+    const n = g.n, idx = (side > 0 ? n : 0) + (k % n), cen = side > 0 ? g.cB : g.cA;
+    const w = g.w;
+    return [
+      cen[0] + (w[3 * idx]     - cen[0]) * f,
+      cen[1] + (w[3 * idx + 1] - cen[1]) * f,
+      cen[2] + (w[3 * idx + 2] - cen[2]) * f
+    ];
+  }
+
+  // =====================================================
+  //  Dessin d'un bloc : faces blanches à plat, cernées d'un trait d'encre
+  // =====================================================
+  const visIdx = new Array(12).fill(0), visZ = new Array(12).fill(0);
+
+  function drawBlock(g) {
+    const w = g.w, s = g.s, F = g.faces, nf = F.length;
+    const sc = proj(g.c[2]);
+
+    // faces tournées vers nous, triées de la plus lointaine à la plus proche
+    let nv = 0;
+    for (let f = 0; f < nf; f++) {
+      const fi = F[f], m = fi.length;
+      let fx = 0, fy = 0, fz = 0, nx = 0, ny = 0, nz = 0;
+      for (let q = 0; q < m; q++) {                      // normale par la méthode de Newell
+        const a = fi[q] * 3, b = fi[(q + 1) % m] * 3;
+        const x0 = w[a], y0 = w[a + 1], z0 = w[a + 2], x1 = w[b], y1 = w[b + 1], z1 = w[b + 2];
+        fx += x0; fy += y0; fz += z0;
+        nx += (y0 - y1) * (z0 + z1);
+        ny += (z0 - z1) * (x0 + x1);
+        nz += (x0 - x1) * (y0 + y1);
+      }
+      fx /= m; fy /= m; fz /= m;
+      if (nx * (fx - g.c[0]) + ny * (fy - g.c[1]) + nz * (fz - g.c[2]) < 0) { nx = -nx; ny = -ny; nz = -nz; }
+      if (nx * -fx + ny * -fy + nz * (-FOCAL - fz) <= 0) continue;     // face cachée
+      let p = nv;
+      while (p > 0 && visZ[p - 1] < fz) { visIdx[p] = visIdx[p - 1]; visZ[p] = visZ[p - 1]; p--; }
+      visIdx[p] = f; visZ[p] = fz; nv++;
+    }
+
+    ctx.fillStyle = BLOCK;
+    ctx.strokeStyle = INK;
+    ctx.lineWidth = Math.max(1, 1.4 * sc);
+    ctx.lineJoin = 'round';
+    for (let k = 0; k < nv; k++) {
+      const fi = F[visIdx[k]];
+      ctx.beginPath();
+      ctx.moveTo(s[2 * fi[0]], s[2 * fi[0] + 1]);
+      for (let q = 1; q < fi.length; q++) ctx.lineTo(s[2 * fi[q]], s[2 * fi[q] + 1]);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+    }
+  }
+
+  // =====================================================
+  //  Dessin d'un fer à béton (courbe quadratique en 3D projetée)
+  // =====================================================
+  function drawRod(it) {
+    const p0 = proj(it.z0), pc = proj(it.zc), p1 = proj(it.z1);
+    const X0 = cx + it.x0 * p0, Y0 = cy + it.y0 * p0;
+    const XC = cx + it.xc * pc, YC = cy + it.yc * pc;
+    const X1 = cx + it.x1 * p1, Y1 = cy + it.y1 * p1;
+    const sc = (p0 + p1) / 2;
+    ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+
+    ctx.beginPath(); ctx.moveTo(X0, Y0); ctx.quadraticCurveTo(XC, YC, X1, Y1);
+    ctx.lineWidth = Math.max(1.4, it.w * sc);
+    ctx.strokeStyle = IRON;
+    ctx.stroke();
+
+    // léger reflet roussi sur le fer
+    ctx.beginPath(); ctx.moveTo(X0 - 0.5, Y0 - 0.6); ctx.quadraticCurveTo(XC - 0.5, YC - 0.6, X1 - 0.5, Y1 - 0.6);
+    ctx.lineWidth = Math.max(0.6, it.w * 0.32 * sc);
+    ctx.strokeStyle = 'rgba(176,112,72,0.7)';
+    ctx.stroke();
+  }
+
+  function pushRod(items, a, c, b, w) {
+    items.push({ k: 1, z: (a[2] + b[2]) / 2, x0: a[0], y0: a[1], z0: a[2], xc: c[0], yc: c[1], zc: c[2], x1: b[0], y1: b[1], z1: b[2], w });
+  }
+  const midp = (a, b) => [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2, (a[2] + b[2]) / 2];
+
+  // ---- Dessin ----
+  function draw(t) {
+    ctx.clearRect(0, 0, W, H);
+    const items = [];
+
+    tentacles.forEach(T => {
+      const B = T.blocks;
+      for (let j = 0; j < SEGS; j++) {
+        buildBlock(T, j, t);
+        items.push({ k: 0, z: B[j].c[2], g: B[j] });
+      }
+
+      for (let j = 0; j < SEGS; j++) {
+        const g = B[j];
+
+        // tiges de fer entre ce bloc et le suivant
+        if (j < SEGS - 1) {
+          const h = B[j + 1];
+          for (const rd of g.rods) {
+            const a = capPoint(g, +1, rd.ka, rd.fa);
+            const b = capPoint(h, -1, rd.kb, rd.fb);
+            const m = midp(a, b);
+            const d = Math.hypot(b[0] - a[0], b[1] - a[1], b[2] - a[2]);
+            const k = d * 0.16;
+            pushRod(items, a, [m[0] + rd.bend[0] * k, m[1] + rd.bend[1] * k, m[2] + rd.bend[2] * k], b, rodW);
+          }
+        }
+
+        // fer qui dépasse du bloc, terminé par un petit crochet
+        if (g.stub) {
+          const st = g.stub, r = RB[j];
+          const ca = Math.cos(st.ang), sa = Math.sin(st.ang);
+          const dx = g.u[0] * ca + g.v[0] * sa, dy = g.u[1] * ca + g.v[1] * sa, dz = g.u[2] * ca + g.v[2] * sa;
+          const L = r * st.len;
+          const s0 = [g.c[0] + dx * r * 0.45, g.c[1] + dy * r * 0.45, g.c[2] + dz * r * 0.45];
+          const s1 = [g.c[0] + dx * (r * 0.95 + L), g.c[1] + dy * (r * 0.95 + L), g.c[2] + dz * (r * 0.95 + L)];
+          const hk = L * 0.55 * st.hook;
+          const s2 = [s1[0] + g.t[0] * hk + dx * L * 0.1, s1[1] + g.t[1] * hk + dy * L * 0.1, s1[2] + g.t[2] * hk + dz * L * 0.1];
+          pushRod(items, s0, midp(s0, s1), s1, rodW);
+          pushRod(items, s1, [s1[0] + dx * L * 0.3, s1[1] + dy * L * 0.3, s1[2] + dz * L * 0.3], s2, rodW);
+        }
+      }
+
+      // fer qui dépasse du dernier bloc (extrémité du tentacule)
+      const g = B[SEGS - 1];
+      const e0 = capPoint(g, +1, 0, 0.3);
+      const L = segLen * 0.55;
+      const e1 = [e0[0] + g.t[0] * L, e0[1] + g.t[1] * L, e0[2] + g.t[2] * L];
+      const e2 = [e1[0] + g.u[0] * L * 0.4, e1[1] + g.u[1] * L * 0.4, e1[2] + g.u[2] * L * 0.4];
+      pushRod(items, e0, midp(e0, e1), e1, rodW);
+      pushRod(items, e1, [e1[0] + g.t[0] * L * 0.2, e1[1] + g.t[1] * L * 0.2, e1[2] + g.t[2] * L * 0.2], e2, rodW);
+    });
+
+    items.sort((p, q) => q.z - p.z);        // les plus lointains d'abord
+    for (const it of items) {
+      if (it.k === 0) drawBlock(it.g);
+      else drawRod(it);
+    }
+  }
+
+  // ---- Boucle ----
+  function loop(ms) {
+    // les tentacules sont mis en pause quand une page de contenu est ouverte
+    if (W > 0 && !document.body.classList.contains('is-page')) { const t = ms / 1000; update(t); draw(t); }
+    requestAnimationFrame(loop);
+  }
+
+  resize();
+  requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>
