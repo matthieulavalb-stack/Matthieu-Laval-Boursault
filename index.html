@@ -134,6 +134,9 @@
   .media img, .media video { display: block; width: 100%; height: auto; }
   .media iframe { display: block; width: 100%; aspect-ratio: 16 / 9; border: 0; }
   .media + .prose { margin-top: 2em; }
+  .media.insta { display: block; max-width: 540px; }
+  .media.insta blockquote { margin: 0; }
+  .media + .credits { margin-top: 1.4em; }
   .media figcaption { margin-top: 0.4em; font-size: 0.85em; color: #444; }
 
   /* ---------- 5. Mobile ----------
@@ -254,7 +257,7 @@
         <div class="media">
           <figure>
             <iframe src="https://www.youtube.com/embed/InI4PCG1VZI" title="Crible – extrait vidéo" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen loading="lazy"></iframe>
-            <figcaption>La scène présentée provient de TouchDesigner ; l’apparition des enceintes a pour objectif une mise en situation immersive. <a href="https://www.youtube.com/watch?v=InI4PCG1VZI" target="_blank" rel="noopener">Voir sur YouTube</a></figcaption>
+            <figcaption>La scène présentée provient de TouchDesigner ; l’apparition des enceintes a pour objectif une mise en situation immersive.</figcaption>
           </figure>
         </div>
 
@@ -262,6 +265,7 @@
           <p>Transformation (live) des flux réseau Wi-Fi perçus (capture du trafic en direct) en paysage sonore et visuel (via Ableton Live et TouchDesigner).</p>
           <p>La dimension sonore est diffusée sur un dispositif d’enceintes en quadriphonie, chaque canal diffusant une piste unique. La visualisation est régie par les flux entrants OSC (forme) et les variations sur son (attracteurs).</p>
           <p>Crible a commencé à prendre forme lors d’un atelier consacré à l’immersion, organisé dans le cadre d’un atelier de Filippo Fabri, à l’IUT de Cachan dans le cadre du DIU ARRC de l’ENS Paris-Saclay. Cette exploration a posé les bases d’une recherche autour des relations entre environnement sonore, espace et perception. Le concept s’est ensuite développé au cours d’un stage-résidence de trois mois à l’ENS, qui a permis d’engager un premier travail de conception et d’expérimentation.</p>
+          <p>Le projet est en cours de développement.</p>
         </div>
         <!-- + images / vidéos de Crible ici -->
       </section>
@@ -276,7 +280,6 @@
         <div class="media">
           <figure>
             <iframe src="https://www.youtube.com/embed/k558zx_KHXA" title="Stress pré-trauma – vidéo" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen loading="lazy"></iframe>
-            <figcaption><a href="https://www.youtube.com/watch?v=k558zx_KHXA" target="_blank" rel="noopener">Voir sur YouTube</a></figcaption>
           </figure>
         </div>
 
@@ -308,10 +311,27 @@
       <section class="page-sec" data-id="irm-kafkaien" data-title="IRM Kafkaïen">
         <p class="meta">TouchDesigner<br>2025</p>
         <div class="prose">
-          <p>Une série de vidéos générée à partir de plusieurs extraits du livre <em>Le Terrier</em> de Franz Kafka.</p>
-          <p>Une performance avec lecture des extraits sélectionnés actionnait en direct les vidéos grâce à la détection de mots-clés prononcés. Un algorithme Python connecté à TouchDesigner assurait cette activation en temps réel.</p>
-          <p>Une représentation interactive des paysages de l’esprit du protagoniste, et un témoignage de son sentiment d’enfermement.</p>
+          <p>Un dispositif imaginé et conçu à partir d’extraits du livre <em>Le Terrier</em> de Franz Kafka. Structuré autour d’une double diffusion : d’un côté des vidéos autonomes, de l’autre la performance.</p>
+          <p>La lecture des extraits sélectionnés actionne en direct des vidéos générées et altérées, grâce à la détection de mots-clés prononcés. Un algorithme Python connecté à TouchDesigner assure cette activation en temps réel.</p>
         </div>
+
+        <!-- Vidéo Instagram : le script officiel d’Instagram (chargé à l’ouverture de la page, voir plus bas)
+             transforme ce bloc en lecteur. Tant qu’il n’est pas chargé, le lien reste affiché. -->
+        <div class="media insta">
+          <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/p/DRz7K6-iokg/" data-instgrm-version="14">
+            <a href="https://www.instagram.com/p/DRz7K6-iokg/" target="_blank" rel="noopener">Voir cette publication sur Instagram</a>
+          </blockquote>
+        </div>
+
+        <div class="prose">
+          <p>Une représentation des paysages de l’esprit du protagoniste de Kafka, piégé dans son espace mental.</p>
+        </div>
+        <p class="credits">
+          Projet à six mains : Solal Corcos, Lana Charron et Matthieu Laval<br>
+          Production : ENS ARRC<br>
+          Lieu : Fablab ENS<br>
+          Avec la participation de Ferdinand Campos et Léo Chedin.
+        </p>
         <!-- + images / vidéos de IRM Kafkaïen ici
              Légendes du portfolio : « Vidéos TouchDesigner de la performance IRM Kafkaïen à ENS Paris-Saclay, 2025 »
              et « Performance IRM Kafkaïen au Fablab de l’ENS Paris-Saclay, 2025 » -->
@@ -508,6 +528,16 @@ document.querySelectorAll('.lang button').forEach(b => {
   const navs    = [...document.querySelectorAll('.sidebar a[data-page]')];
   const SITE    = 'Matthieu Laval-Boursault';
 
+  // Lecteur Instagram : le script officiel n'est chargé qu'à la première ouverture
+  // d'une page qui contient une vidéo Instagram (il a besoin que le bloc soit visible).
+  function loadInstagram() {
+    if (window.instgrm && window.instgrm.Embeds) { window.instgrm.Embeds.process(); return; }
+    if (document.getElementById('insta-embed-js')) return;
+    const s = document.createElement('script');
+    s.id = 'insta-embed-js'; s.async = true; s.src = 'https://www.instagram.com/embed.js';
+    document.body.appendChild(s);
+  }
+
   function route() {
     const id  = decodeURIComponent(location.hash.replace(/^#\/?/, ''));
     const sec = secs.find(s => s.dataset.id === id) || null;
@@ -520,6 +550,7 @@ document.querySelectorAll('.lang button').forEach(b => {
     document.title = sec ? sec.dataset.title + ' — ' + SITE : SITE;
     page.scrollTop = 0;
     window.scrollTo(0, 0);
+    if (sec && sec.querySelector('.instagram-media')) loadInstagram();
   }
   window.addEventListener('hashchange', route);
   route();
