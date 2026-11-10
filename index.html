@@ -137,6 +137,13 @@
   .media.insta { display: block; max-width: 540px; }
   .media.insta blockquote { margin: 0; }
   .media + .credits { margin-top: 1.4em; }
+  .gallery { margin-top: 2em; max-width: 56em; }
+  .gallery + .gallery { margin-top: 1.6em; }
+  .gallery + .prose { margin-top: 2em; }
+  .gallery .row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1em; align-items: start; }
+  .gallery .row.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .gallery img { display: block; width: 100%; height: auto; }
+  .gallery .gcap { margin-top: 0.5em; font-size: 0.85em; color: #444; }
   .media figcaption { margin-top: 0.4em; font-size: 0.85em; color: #444; }
 
   /* ---------- 5. Mobile ----------
@@ -161,6 +168,7 @@
     .page-sec { padding-bottom: 2.5em; }
 
     .entry { grid-template-columns: minmax(0, 1fr); row-gap: 0.4em; }
+    .gallery .row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .page-sec { font-size: 0.85em; }
   }
 </style>
@@ -353,35 +361,22 @@
           </figure>
         </div>
 
-        <div class="media">
-          <figure>
-            <img src="images/biomorphies/01.png" alt="Gravure sur plexiglas, vue à plat" loading="lazy">
-            <figcaption>Gravure sur plexiglas, 2025</figcaption>
-          </figure>
-          <figure>
-            <img src="images/biomorphies/02.jpg" alt="Plaque de plexiglas gravée posée sur une fenêtre" loading="lazy">
-            <figcaption>Gravure sur plexiglas, 2025</figcaption>
-          </figure>
-          <figure>
-            <img src="images/biomorphies/03.png" alt="Modèle 3D, vue de face" loading="lazy">
-            <figcaption>Impression 3D, 2025</figcaption>
-          </figure>
-          <figure>
-            <img src="images/biomorphies/04.png" alt="Modèle 3D, vue inclinée" loading="lazy">
-            <figcaption>Impression 3D, 2025</figcaption>
-          </figure>
-          <figure>
-            <img src="images/biomorphies/05.png" alt="Modèle 3D, vue de côté" loading="lazy">
-            <figcaption>Impression 3D, 2025</figcaption>
-          </figure>
-          <figure>
-            <img src="images/biomorphies/06.jpg" alt="Impression 3D, vue de face" loading="lazy">
-            <figcaption>Impression 3D, 2025</figcaption>
-          </figure>
-          <figure>
-            <img src="images/biomorphies/07.jpg" alt="Impression 3D, vue de côté" loading="lazy">
-            <figcaption>Impression 3D, 2025</figcaption>
-          </figure>
+        <div class="gallery">
+          <div class="row">
+            <img src="images/biomorphies/01.jpg" alt="Gravure sur plexiglas" loading="lazy">
+            <img src="images/biomorphies/02.jpg" alt="Gravure sur plexiglas" loading="lazy">
+          </div>
+          <p class="gcap">Gravure sur plexiglas, 2025</p>
+        </div>
+        <div class="gallery">
+          <div class="row">
+            <img src="images/biomorphies/03.jpg" alt="Impression 3D" loading="lazy">
+            <img src="images/biomorphies/04.jpg" alt="Impression 3D" loading="lazy">
+            <img src="images/biomorphies/05.jpg" alt="Impression 3D" loading="lazy">
+            <img src="images/biomorphies/06.jpg" alt="Impression 3D" loading="lazy">
+            <img src="images/biomorphies/07.jpg" alt="Impression 3D" loading="lazy">
+          </div>
+          <p class="gcap">Impression 3D, 2025</p>
         </div>
       </section>
 
@@ -398,39 +393,21 @@
           <div class="where">ENS Paris-Saclay &amp; La scène de recherche<br>2026</div>
         </div>
 
-        <div class="media">
-          <figure>
-            <img src="images/exposition/01.jpg" alt="Gravures sur acrylique" loading="lazy">
-            <figcaption>Gravures sur acrylique</figcaption>
-          </figure>
-          <figure>
-            <img src="images/exposition/02.jpg" alt="Gravures sur acrylique" loading="lazy">
-            <figcaption>Gravures sur acrylique</figcaption>
-          </figure>
-          <figure>
-            <img src="images/exposition/03.jpg" alt="Impression 3D, 2025" loading="lazy">
-            <figcaption>Impression 3D, 2025</figcaption>
-          </figure>
-          <figure>
-            <img src="images/exposition/04.jpg" alt="Impression 3D, 2025" loading="lazy">
-            <figcaption>Impression 3D, 2025</figcaption>
-          </figure>
-          <figure>
-            <img src="images/exposition/05.jpg" alt="Installation audio-réactive live, 2025" loading="lazy">
-            <figcaption>Installation audio-réactive live, 2025</figcaption>
-          </figure>
-          <figure>
-            <img src="images/exposition/06.jpg" alt="Impression 3D, 2025" loading="lazy">
-            <figcaption>Impression 3D, 2025</figcaption>
-          </figure>
-          <figure>
-            <img src="images/exposition/07.jpg" alt="Installation audio-réactive live, 2025" loading="lazy">
-            <figcaption>Installation audio-réactive live, 2025</figcaption>
-          </figure>
-          <figure>
-            <img src="images/exposition/08.jpg" alt="Installation audio-réactive live, 2025" loading="lazy">
-            <figcaption>Installation audio-réactive live, 2025</figcaption>
-          </figure>
+        <div class="gallery">
+          <div class="row">
+            <img src="images/exposition/01.jpg" alt="Impression 3D" loading="lazy">
+            <img src="images/exposition/02.jpg" alt="Impression 3D" loading="lazy">
+            <img src="images/exposition/04.jpg" alt="Impression 3D" loading="lazy">
+          </div>
+          <p class="gcap">Impression 3D, 2025</p>
+        </div>
+        <div class="gallery">
+          <div class="row">
+            <img src="images/exposition/03.jpg" alt="Installation audio-réactive live" loading="lazy">
+            <img src="images/exposition/05.jpg" alt="Installation audio-réactive live" loading="lazy">
+            <img src="images/exposition/06.jpg" alt="Installation audio-réactive live" loading="lazy">
+          </div>
+          <p class="gcap">Installation audio-réactive live, 2025</p>
         </div>
 
         <div class="prose">
@@ -459,19 +436,13 @@
           <div class="where">Centre Wallonie-Bruxelles<br>2026</div>
         </div>
 
-        <div class="media">
-          <figure>
+        <div class="gallery">
+          <div class="row two">
             <img src="images/performances/01.jpg" alt="Atelier d’expérimentation sonore, Palerme" loading="lazy">
-          </figure>
-          <figure>
             <img src="images/performances/02.jpg" alt="Atelier d’expérimentation sonore, Palerme" loading="lazy">
-          </figure>
-          <figure>
             <img src="images/performances/03.jpg" alt="Atelier d’expérimentation sonore, Palerme" loading="lazy">
-          </figure>
-          <figure>
             <img src="images/performances/04.jpg" alt="Atelier d’expérimentation sonore, Palerme" loading="lazy">
-          </figure>
+          </div>
         </div>
       </section>
 
