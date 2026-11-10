@@ -723,6 +723,12 @@ document.querySelectorAll('.lang button').forEach(b => {
   const GAP     = 0.55;  // angle (radians) laissé vide autour du tentacule choisi
   const SPREAD_REACH = 0.8; // portée max des tentacules dispersés (0 à 1)
 
+  // ---- Réglages : finesse des traits selon la profondeur ----
+  const Z_NEAR = -40;   // en dessous (premier plan) : trait à pleine épaisseur
+  const Z_FAR  = 220;   // au-delà (arrière-plan) : trait disparu
+  const DEPTH_CURVE = 1; // 1 = amincissement linéaire, >1 = les traits restent épais plus longtemps
+  const depthK = z => Math.pow(Math.max(0, Math.min(1, 1 - (z - Z_NEAR) / (Z_FAR - Z_NEAR))), DEPTH_CURVE);
+
   // ---- Réglages : morphologie des blocs ----
   const ANARCHY   = 1.0;  // 0 = blocs assez réguliers, 1 = anarchiques, 1.5 = très cassés
   const TILT      = 0.30; // inclinaison aléatoire de chaque bloc
@@ -838,7 +844,7 @@ document.querySelectorAll('.lang button').forEach(b => {
     const m = Math.min(W, H);
     segLen = m * 0.058;
     baseR  = m * 0.034;
-    rodW   = Math.max(1.8, m * 0.0034);
+    rodW   = Math.max(0.95, m * 0.0018);
     RB = Array.from({ length: SEGS }, (_, j) => baseR * Math.pow(1 - TAPER * j / (SEGS - 1), 0.8) + 2);
     R  = RB.map(v => v * CLAMP_K);           // rayon pris en compte pour rester dans le cadre
 
@@ -1072,7 +1078,10 @@ document.querySelectorAll('.lang button').forEach(b => {
 
     ctx.fillStyle = BLOCK;
     ctx.strokeStyle = INK;
-    ctx.lineWidth = Math.max(1, 1.4 * sc);
+    const dk = depthK(g.c[2]);
+    const lw = Math.max(0.5, 0.75 * sc) * dk;          // plus c'est loin, plus c'est fin
+    const stroke = lw > 0.12;                         // trait disparu au fond
+    ctx.lineWidth = lw;
     ctx.lineJoin = 'round';
     for (let k = 0; k < nv; k++) {
       const fi = F[visIdx[k]];
@@ -1081,7 +1090,7 @@ document.querySelectorAll('.lang button').forEach(b => {
       for (let q = 1; q < fi.length; q++) ctx.lineTo(s[2 * fi[q]], s[2 * fi[q] + 1]);
       ctx.closePath();
       ctx.fill();
-      ctx.stroke();
+      if (stroke) ctx.stroke();
     }
   }
 
@@ -1094,16 +1103,18 @@ document.querySelectorAll('.lang button').forEach(b => {
     const XC = cx + it.xc * pc, YC = cy + it.yc * pc;
     const X1 = cx + it.x1 * p1, Y1 = cy + it.y1 * p1;
     const sc = (p0 + p1) / 2;
+    const dk = depthK(it.z);
+    if (it.w * dk < 0.12) return;                     // tige disparue au fond
     ctx.lineCap = 'round'; ctx.lineJoin = 'round';
 
     ctx.beginPath(); ctx.moveTo(X0, Y0); ctx.quadraticCurveTo(XC, YC, X1, Y1);
-    ctx.lineWidth = Math.max(1.4, it.w * sc);
+    ctx.lineWidth = Math.max(0.75, it.w * sc) * dk;
     ctx.strokeStyle = IRON;
     ctx.stroke();
 
     // léger reflet roussi sur le fer
     ctx.beginPath(); ctx.moveTo(X0 - 0.5, Y0 - 0.6); ctx.quadraticCurveTo(XC - 0.5, YC - 0.6, X1 - 0.5, Y1 - 0.6);
-    ctx.lineWidth = Math.max(0.6, it.w * 0.32 * sc);
+    ctx.lineWidth = Math.max(0.3, it.w * 0.32 * sc) * dk;
     ctx.strokeStyle = 'rgba(176,112,72,0.7)';
     ctx.stroke();
   }
