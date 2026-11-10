@@ -4,6 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Matthieu Laval-Boursault</title>
+<link rel="icon" type="image/png" sizes="256x256" href="favicon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <style>
   /* ---------- 1. Base ---------- */
   :root {
@@ -1191,66 +1193,61 @@
   const midp = (a, b) => [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2, (a[2] + b[2]) / 2];
 
   // =====================================================
-  //  Bloc central : un morceau de béton armé à demi détruit.
-  //  Une face avant éclatée en cratère, au fond duquel on voit la grille
-  //  d'armature ; des fers sortent du cratère, des arêtes cassées et des flancs.
-  //  Les tentacules partent de ce cratère.
+  //  Bloc central : un amas d'éclats de béton disloqués, traversés de fers tordus.
+  //  Les tentacules partent de cet amas.
   // =====================================================
   function makeCore() {
-    const n = 7, wx = 1.0, wy = 0.82;
-    const ang = [];
-    for (let k = 0; k < n; k++) ang.push(((k + rnd(-0.3, 0.3)) / n) * Math.PI * 2);
-    ang.sort((a, b) => a - b);
+    // Bloc « déconstruit » : une dizaine d'éclats de béton de tailles et d'orientations disparates,
+    // projetés autour d'un centre, traversés de fers tordus qui partent dans toutes les directions.
+    const oct = [[1, 0, 0], [-1, 0, 0], [0, 1, 0], [0, -1, 0], [0, 0, 1], [0, 0, -1]];
+    const octF = [[0, 2, 4], [2, 1, 4], [1, 3, 4], [3, 0, 4], [2, 0, 5], [1, 2, 5], [3, 1, 5], [0, 3, 5]];
+    const ph = (1 + Math.sqrt(5)) / 2, kk = 0.62;
+    const ico = [[-1, ph, 0], [1, ph, 0], [-1, -ph, 0], [1, -ph, 0], [0, -1, ph], [0, 1, ph], [0, -1, -ph], [0, 1, -ph], [ph, 0, -1], [ph, 0, 1], [-ph, 0, -1], [-ph, 0, 1]].map(p => p.map(x => x * kk));
+    const icoF = [[0, 11, 5], [0, 5, 1], [0, 1, 7], [0, 7, 10], [0, 10, 11], [1, 5, 9], [5, 11, 4], [11, 10, 2], [10, 7, 6], [7, 1, 8],
+                  [3, 9, 4], [3, 4, 2], [3, 2, 6], [3, 6, 8], [3, 8, 9], [4, 9, 5], [2, 4, 11], [6, 2, 10], [8, 6, 7], [9, 8, 1]];
+    const rot = (p, a, b, c) => {                                   // rotation d'Euler quelconque
+      let [x, y, z] = p, t;
+      t = x * Math.cos(a) - y * Math.sin(a); y = x * Math.sin(a) + y * Math.cos(a); x = t;
+      t = x * Math.cos(b) + z * Math.sin(b); z = -x * Math.sin(b) + z * Math.cos(b); x = t;
+      t = y * Math.cos(c) - z * Math.sin(c); z = y * Math.sin(c) + z * Math.cos(c); y = t;
+      return [x, y, z];
+    };
 
-    const K = [], F = [], I = [];                 // arrière, bord avant (ébréché), fond du cratère
-    for (let k = 0; k < n; k++) {
-      const a = ang[k];
-      K.push([Math.cos(a) * rnd(0.85, 1.1) * wx, Math.sin(a) * rnd(0.85, 1.1) * wy, 0.9 + rnd(-0.1, 0.1)]);
-      const broken = (k === 1 || k === 4) ? rnd(0.45, 0.8) : rnd(-0.3, 0.15);   // 2 coins arrachés
-      const rf = rnd(0.78, 1.12);
-      F.push([Math.cos(a) * rf * wx, Math.sin(a) * rf * wy, -1 + broken]);
-      const ai = a + rnd(-0.25, 0.25), ri = rnd(0.38, 0.58);
-      I.push([Math.cos(ai) * ri * wx + 0.1, Math.sin(ai) * ri * wy - 0.05, -0.1 + rnd(-0.12, 0.12)]);
+    const V = [], faces = [], shards = [];
+    const N = 9;
+    for (let s = 0; s < N; s++) {
+      const useIco = Math.random() < 0.4;
+      const bv = useIco ? ico : oct, bf = useIco ? icoF : octF;
+      const big = s === 0;                                          // un gros éclat reste au centre
+      const sc = big ? rnd(0.55, 0.7) : rnd(0.2, 0.5);
+      const st = [sc * rnd(0.5, 1.9), sc * rnd(0.35, 1.3), sc * rnd(0.5, 1.9)];   // éclats allongés, plats, tordus
+      const ra = rnd(0, 6.28), rb = rnd(0, 6.28), rc = rnd(0, 6.28);
+      const pos = big ? [0, 0, 0] : [rnd(-1.25, 1.25), rnd(-0.95, 0.95), rnd(-1.1, 1.1)];
+      const off = V.length;
+      for (const p of bv) {
+        const r = rnd(0.7, 1.25);
+        const q = rot([p[0] * st[0] * r, p[1] * st[1] * r, p[2] * st[2] * r], ra, rb, rc);
+        V.push([q[0] + pos[0], q[1] + pos[1], q[2] + pos[2]]);
+      }
+      for (const f of bf) {
+        const i = f.map(j => j + off);
+        const c = [0, 1, 2].map(d => (V[i[0]][d] + V[i[1]][d] + V[i[2]][d]) / 3);
+        faces.push({ i, ref: [c[0] + (c[0] - pos[0]) * 2, c[1] + (c[1] - pos[1]) * 2, c[2] + (c[2] - pos[2]) * 2] });
+      }
+      shards.push({ pos, sc });
     }
-    const V = [...K, ...F, ...I];
-    const cen = idx => idx.reduce((c, i) => [c[0] + V[i][0] / idx.length, c[1] + V[i][1] / idx.length, c[2] + V[i][2] / idx.length], [0, 0, 0]);
 
-    // faces + point situé du côté « air » (sert à orienter la normale)
-    const faces = [];
-    faces.push({ i: Array.from({ length: n }, (_, k) => k), ref: [0, 0, 3] });
-    for (let k = 0; k < n; k++) {
-      const i = [k, (k + 1) % n, n + (k + 1) % n, n + k], c = cen(i);
-      faces.push({ i, ref: [c[0] * 2, c[1] * 2, c[2]] });                        // flanc
-    }
-    for (let k = 0; k < n; k++) faces.push({ i: [n + k, n + (k + 1) % n, 2 * n + (k + 1) % n, 2 * n + k], ref: [0, 0, -3] }); // paroi du cratère
-    faces.push({ i: Array.from({ length: n }, (_, k) => 2 * n + k), ref: [0, 0, -3] });                            // fond
-
-    // ---- armature ----
+    // ---- fers : longs, tordus, dans tous les sens, certains traversent les éclats ----
     const rods = [];
     const add = (a, b, bd = 0.05) => rods.push({ a, b, bend: [rnd(-bd, bd), rnd(-bd, bd), rnd(-bd, bd)] });
-    // grille au fond du cratère (certains fers manquent)
-    [-0.2, 0.08, 0.3].forEach(y => { if (Math.random() < 0.85) add([-0.8, y + rnd(-0.04, 0.04), -0.42], [0.8, y + rnd(-0.05, 0.05), -0.42]); });
-    [-0.38, -0.05, 0.28].forEach(x => { if (Math.random() < 0.85) add([x + rnd(-0.04, 0.04), -0.68, -0.5], [x + rnd(-0.05, 0.05), 0.68, -0.5]); });
-    // fers qui sortent du cratère, terminés par un crochet
-    for (let i = 0; i < 4; i++) {
-      const a = [rnd(-0.35, 0.35), rnd(-0.3, 0.3), -0.5];
-      const b = [a[0] + rnd(-0.4, 0.4), a[1] + rnd(-0.4, 0.4), -1.1 - rnd(0.5, 1.3)];
-      add(a, b, 0.1);
-      add(b, [b[0] + rnd(-0.25, 0.25), b[1] + rnd(-0.25, 0.25), b[2] - rnd(0.05, 0.2)], 0.03);
+    const dir = () => { const a = rnd(0, 6.28), z = rnd(-1, 1), r = Math.sqrt(1 - z * z); return [r * Math.cos(a), r * Math.sin(a) * 0.85, z]; };
+    for (let i = 0; i < 9; i++) {
+      const sh = shards[Math.floor(rnd(0, shards.length))], d = dir(), L = rnd(0.9, 1.9);
+      const a = [sh.pos[0] - d[0] * rnd(0.1, 0.5), sh.pos[1] - d[1] * rnd(0.1, 0.5), sh.pos[2] - d[2] * rnd(0.1, 0.5)];
+      const b = [a[0] + d[0] * L, a[1] + d[1] * L, a[2] + d[2] * L];
+      add(a, b, 0.2);
+      if (Math.random() < 0.7) add(b, [b[0] + rnd(-0.35, 0.35), b[1] + rnd(-0.35, 0.35), b[2] + rnd(-0.35, 0.35)], 0.05);   // crochet
     }
-    // fers dégagés aux deux coins arrachés
-    [1, 4].forEach(k => {
-      const a = F[k], b = [a[0] * 1.25, a[1] * 1.25, a[2] - 0.7];
-      add(a, b, 0.08);
-      add(b, [b[0] + rnd(-0.2, 0.2), b[1] + rnd(-0.2, 0.2), b[2] - 0.15], 0.03);
-    });
-    // fers qui dépassent des flancs
-    [0, 2, 3, 5].forEach(k => {
-      const c = cen([k, (k + 1) % n, n + (k + 1) % n, n + k]);
-      const b = [c[0] * 1.5, c[1] * 1.5, c[2] + rnd(-0.3, 0.2)];
-      add([c[0] * 0.9, c[1] * 0.9, c[2]], b, 0.06);
-      add(b, [b[0] + rnd(-0.2, 0.2), b[1] + rnd(-0.2, 0.2), b[2] + rnd(-0.2, 0.2)], 0.03);
-    });
     return { V, faces, rods, cur: null };
   }
 
