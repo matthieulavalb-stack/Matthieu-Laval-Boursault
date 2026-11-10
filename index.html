@@ -390,7 +390,7 @@
 
       <!-- ===================== RUBRIQUES (CV) ===================== -->
 
-      <section class="page-sec" data-id="exposition" data-title="Exposition">
+      <section class="page-sec" data-id="exposition" data-title="Exposition" data-title-en="Exhibition">
         <div class="entry">
           <div class="what">
             <h3>Traverser l’entre</h3>
@@ -433,7 +433,7 @@
         <div class="entry">
           <div class="what">
             <h3>IRM Kafkaïen</h3>
-            <p>Performance avec lecture d’extraits du <em>Terrier</em> de Franz Kafka : les vidéos étaient actionnées en direct grâce à la détection de mots-clés prononcés. <a href="#/irm-kafkaien">Voir le projet</a></p>
+            <p><span class="t">Performance avec lecture d’extraits du <em>Terrier</em> de Franz Kafka : les vidéos étaient actionnées en direct grâce à la détection de mots-clés prononcés.</span> <a href="#/irm-kafkaien">Voir le projet</a></p>
             <p>au Fablab de l’ENS Paris-Saclay (91)</p>
           </div>
           <div class="where">ENS Paris-Saclay<br>2025</div>
@@ -478,7 +478,7 @@
         </div>
       </section>
 
-      <section class="page-sec" data-id="residence-radio" data-title="Résidence radio">
+      <section class="page-sec" data-id="residence-radio" data-title="Résidence radio" data-title-en="Radio residency">
         <div class="entry">
           <div class="what">
             <p>Résidence Distortion sur Radio Sofa depuis début 2025.</p>
@@ -566,7 +566,7 @@
         </div>
       </section>
 
-      <section class="page-sec" data-id="programmation" data-title="Programmation">
+      <section class="page-sec" data-id="programmation" data-title="Programmation" data-title-en="Programming">
         <div class="entry">
           <div class="what">
             <h3>Solidarity with the Belarusian people and fight against fascism</h3>
@@ -625,7 +625,7 @@
 
       <!-- ===================== INFOS ===================== -->
 
-      <section class="page-sec" data-id="a-propos" data-title="À propos">
+      <section class="page-sec" data-id="a-propos" data-title="À propos" data-title-en="About">
         <div class="prose">
           <p>1997</p>
           <p>Diplômé en Recherche et création à l’ENS Paris-Saclay, et en Innovation, arts et industries créatives de l’Université Paris 1 Panthéon-Sorbonne.</p>
@@ -633,7 +633,7 @@
         </div>
       </section>
 
-      <section class="page-sec" data-id="contacts" data-title="Contacts">
+      <section class="page-sec" data-id="contacts" data-title="Contacts" data-title-en="Contact">
         <div class="prose">
           <p>Matthieu Laval-Boursault</p>
           <p>
@@ -648,14 +648,56 @@
 
 <script>
 /* =====================================================
-   A. Bouton de langue (visuel uniquement pour l'instant)
+   A. Langue FR / EN
+   - le français est le texte d'origine (HTML) ; l'anglais est dans le
+     dictionnaire ci-dessous, appliqué à la volée quand on clique sur EN.
+   - les titres des 5 œuvres (Crible, Stress pré-trauma, Zone d’ombre,
+     IRM Kafkaïen, Biomorphies) ne sont volontairement pas traduits.
+   - pour modifier une traduction : changer la valeur à droite dans EN / ALT.
    ===================================================== */
-document.querySelectorAll('.lang button').forEach(b => {
-  b.addEventListener('click', () => {
-    document.querySelectorAll('.lang button').forEach(x => x.classList.remove('on'));
-    b.classList.add('on');
+(() => {
+  const EN  = {"Exposition": "Exhibition", "Résidence radio": "Radio residency", "Programmation": "Programming", "Contacts": "Contact", "À propos": "About", "Dispositif live immersif<br>Programme, casque VR/AR, système son<br>2026": "Immersive live installation<br>Software, VR/AR headset, sound system<br>2026", "Crible est un projet d’installation générative qui propose une exploration sensible et révèle nos infrastructures numériques et systèmes de communication.": "Crible is a generative installation project that offers a sensory exploration and reveals our digital infrastructures and communication systems.", "Elle propose une lecture visuelle et sonore du maillage des ondes en temps réel. L’enjeu est de concevoir un dispositif dont les manifestations évoluent selon l’activité du lieu et des publics. La composition sonore place en éveil sensoriel. L’image vient l’accompagner, avec une représentation spéculative des ondes.": "It offers a visual and sonic reading of the mesh of waves in real time. The aim is to design a device whose manifestations evolve according to the activity of the venue and its audiences. The sound composition places the audience in a state of sensory awakening. The image accompanies it, with a speculative representation of the waves.", "L’articulation entre éléments visuels, sonores et infographiques du signal nourrie l’immersion. L’installation mobilise les sens du public et suggère une nouvelle lecture de notre environnement.": "The articulation between the visual, sonic and infographic elements of the signal feeds the immersion. The installation engages the audience’s senses and suggests a new reading of our environment.", "La scène présentée provient de TouchDesigner ; l’apparition des enceintes a pour objectif une mise en situation immersive.": "The scene shown comes from TouchDesigner; the appearance of the speakers is meant to simulate an immersive setting.", "Transformation (live) des flux réseau Wi-Fi perçus (capture du trafic en direct) en paysage sonore et visuel (via Ableton Live et TouchDesigner).": "Live transformation of the Wi-Fi network flows perceived (live traffic capture) into a sonic and visual landscape (via Ableton Live and TouchDesigner).", "La dimension sonore est diffusée sur un dispositif d’enceintes en quadriphonie, chaque canal diffusant une piste unique. La visualisation est régie par les flux entrants OSC (forme) et les variations sur son (attracteurs).": "The sound is played through a quadraphonic speaker setup, each channel carrying a unique track. The visualisation is driven by incoming OSC data (shape) and by variations in the sound (attractors).", "Crible a commencé à prendre forme lors d’un atelier consacré à l’immersion, organisé dans le cadre d’un atelier de Filippo Fabri, à l’IUT de Cachan dans le cadre du DIU ARRC de l’ENS Paris-Saclay. Cette exploration a posé les bases d’une recherche autour des relations entre environnement sonore, espace et perception. Le concept s’est ensuite développé au cours d’un stage-résidence de trois mois à l’ENS, qui a permis d’engager un premier travail de conception et d’expérimentation.": "Crible began to take shape during a workshop on immersion, led by Filippo Fabri at the IUT de Cachan as part of the DIU ARRC at ENS Paris-Saclay. This exploration laid the foundations for research into the relationships between sound environment, space and perception. The concept then developed during a three-month internship-residency at ENS, which made it possible to begin a first phase of design and experimentation.", "Le projet est en cours de développement.": "The project is currently in development.", "Dispositif audiovisuel<br>Blender, Adobe Premiere and Ableton Live 12<br>Quatre écrans et système son<br>2026": "Audiovisual installation<br>Blender, Adobe Premiere and Ableton Live 12<br>Four screens and sound system<br>2026", "Diffusion : ENS Paris-Saclay, 2026": "Shown at: ENS Paris-Saclay, 2026", "Une installation audiovisuelle composée de plusieurs écrans aux fonctions complémentaires. À partir d’un ensemble d’entretiens réalisés dans différents quartiers de Paris, le dispositif met en scène une expérience d’écoute et de navigation à travers des récits individuels liés au contexte politique français et l’appréhension de celui-ci.": "An audiovisual installation made up of several screens with complementary functions. Based on a series of interviews conducted in different neighbourhoods of Paris, the piece stages an experience of listening and navigation through individual accounts related to the French political context and the apprehension it provokes.", "Le concept de Stress pré-trauma s’est développé au cours d’un stage-résidence de trois mois à l’ENS, qui a permis d’engager un premier travail d’interview, de conception et d’expérimentation. Le projet est en cours de développement.": "The concept of Stress pré-trauma developed during a three-month internship-residency at ENS, which made it possible to begin a first phase of interviews, design and experimentation. The project is currently in development.", "Court-métrage<br>Durée : 6min48<br>2025": "Short film<br>Duration: 6min48<br>2025", "Le court-métrage explore la manière dont un individu intériorise ce qu’il ne parvient à formuler. Cette intériorité est un enfermement, qui prend forme dans l’inconscient. Le silence produit ses propres démons : il accumule la frustration, la colère, qui se frayent un chemin dans l’esprit.": "The short film explores how an individual internalises what they cannot put into words. This interiority is a form of confinement, which takes shape in the unconscious. Silence produces its own demons: it accumulates frustration and anger, which force their way through the mind.", "Synopsis :<br>Zone d’ombre traduit une expérience individuelle, à dimension collective. L’expérience intime est un point d’entrée vers une réflexion sur notre époque. La peur de ne plus se reconnaître, de détourner le regard sur sa situation et celle d’autrui : une angoisse existentielle, face à des systèmes et logiques économiques, sociales et politiques qui dépassent l’individu·e.": "Synopsis:<br>Zone d’ombre translates an individual experience with a collective dimension. The intimate experience is an entry point to a reflection on our times. The fear of no longer recognising oneself, of looking away from one’s own situation and that of others: an existential anxiety in the face of economic, social and political systems and logics that go beyond the individual.", "Réalisation et scénario : Matthieu Laval<br> Chef opérateur et montage : Théo Clamart<br> Image : Jean Lecerf, Stanislas Lachaux et Théo Clamart<br> Modélisation et animation 3D créature : Eloi Vidal<br> Animation et environnements 3D : Louis Guichard<br> Mixage son : Vasco Vassard<br> Ingénierie sonore voix-off : Florent Lavallée": "Directed and written by: Matthieu Laval<br> Director of photography and editing: Théo Clamart<br> Cinematography: Jean Lecerf, Stanislas Lachaux and Théo Clamart<br> 3D creature modelling and animation: Eloi Vidal<br> 3D animation and environments: Louis Guichard<br> Sound mix: Vasco Vassard<br> Voice-over sound engineering: Florent Lavallée", "Un dispositif imaginé et conçu à partir d’extraits du livre <em>Le Terrier</em> de Franz Kafka. Structuré autour d’une double diffusion : d’un côté des vidéos autonomes, de l’autre la performance.": "A piece conceived and built from excerpts of Franz Kafka’s book <em>The Burrow</em>. Structured around a dual presentation: autonomous videos on one side, the performance on the other.", "La lecture des extraits sélectionnés actionne en direct des vidéos générées et altérées, grâce à la détection de mots-clés prononcés. Un algorithme Python connecté à TouchDesigner assure cette activation en temps réel.": "Reading the selected excerpts triggers generated and altered videos live, through the detection of spoken keywords. A Python algorithm connected to TouchDesigner handles this activation in real time.", "Une représentation des paysages de l’esprit du protagoniste de Kafka, piégé dans son espace mental.": "A representation of the mindscapes of Kafka’s protagonist, trapped in his own mental space.", "Projet à six mains : Solal Corcos, Lana Charron et Matthieu Laval<br> Production : ENS ARRC<br> Lieu : Fablab ENS<br> Avec la participation de Ferdinand Campos et Léo Chedin.": "A six-handed project: Solal Corcos, Lana Charron and Matthieu Laval<br> Production: ENS ARRC<br> Venue: Fablab ENS<br> With the participation of Ferdinand Campos and Léo Chedin.", "Voir cette publication sur Instagram": "View this post on Instagram", "Série d’œuvres plastiques biomorphiques. Le processus de création repose sur la représentation d’entités rencontrées en rêve. Capturer l’apparence, l’énergie et les qualités sensuelles de ces rencontres.": "A series of biomorphic visual artworks. The creative process rests on the representation of entities encountered in dreams: capturing the appearance, energy and sensual qualities of these encounters.", "Gravure sur plexiglas, 2025": "Plexiglas engraving, 2025", "Impression 3D, 2025": "3D printing, 2025", "Cur. Benjamin Gaulon": "Curated by Benjamin Gaulon", "Exposition collective avec Lana Charron, Solal Corcos, Suzie Giroudon, Manon Gorteau, Agathe Janeczko, Samy Khemmar, Martin Leblon, Wonjin Park et Tania Safa": "Group exhibition with Lana Charron, Solal Corcos, Suzie Giroudon, Manon Gorteau, Agathe Janeczko, Samy Khemmar, Martin Leblon, Wonjin Park and Tania Safa", "à la Scène de recherche Paris-Saclay (91)": "at the Scène de recherche Paris-Saclay (91)", "Les textures sonores, granuleuses, parfois traversées d’éclats plus lumineux, évoquent des espaces abyssaux. Des nappes créent une sensation d’enveloppement, tandis que des fréquences plus aiguës surgissent comme des percées.": "The grainy sound textures, at times crossed by brighter flashes, evoke abyssal spaces. Pads create a feeling of envelopment, while higher frequencies surge like breakthroughs.", "Le dispositif, conçu sur TouchDesigner, réagit à l’activité sonore et provoque des mouvements, ondulations, et une évolution de la forme représentée.": "The system, built in TouchDesigner, reacts to the sound activity and produces movements, undulations and an evolution of the depicted form.", "Installation audio-réactive live, 2025": "Live audio-reactive installation, 2025", "Performance avec lecture d’extraits du <em>Terrier</em> de Franz Kafka : les vidéos étaient actionnées en direct grâce à la détection de mots-clés prononcés.": "Performance with a reading of excerpts from Franz Kafka’s <em>The Burrow</em>: the videos were triggered live through the detection of spoken keywords.", "Voir le projet": "View the project", "au Fablab de l’ENS Paris-Saclay (91)": "at the Fablab of ENS Paris-Saclay (91)", "Atelier d’expérimentation sonore": "Sound experimentation workshop", "Recherche et création collective entre artistes autour de l’expérimentation sonore, avec un encadrement par Nicolas Montgermont et Elie Bolard": "Collective research and creation among artists around sound experimentation, supervised by Nicolas Montgermont and Elie Bolard", "à l’Institut français de Palerme (Italie)": "at the Institut français de Palerme (Italy)", "Diffusion live sur la Radio Dopo et sur Radio Salé.": "Broadcast live on Radio Dopo and Radio Salé.", "Résidence Distortion sur Radio Sofa depuis début 2025.": "Distortion residency on Radio Sofa since early 2025.", "Dj set à Antenne 47 le 05.06.26 pour la résidence Distortion": "DJ set at Antenne 47 on 5 June 2026 for the Distortion residency", "Cur. Matthieu Laval-Boursault": "Curated by Matthieu Laval-Boursault", "Exposition collective avec Maxim Zmeyev, Lucile Ometz, Arthur Dujols-Luquet, Clara Montrieul et Yvonne Lui": "Group exhibition with Maxim Zmeyev, Lucile Ometz, Arthur Dujols-Luquet, Clara Montrieul and Yvonne Lui", "à La Cité fertile (93)": "at La Cité fertile (93)", "Note d’intention :": "Curatorial statement:", "“Une pensée qui fait rêver. Une vision idéalisée, un monde commun.": "“A thought that makes us dream. An idealised vision, a shared world.", "En cette période marquée par la régression dans les domaines social, environnemental et politique, c’est plus que jamais le moment de manifester les perceptions et représentations utopiques de ce qui pourrait faire société.": "In this period marked by social, environmental and political regression, it is more than ever the moment to express utopian perceptions and representations of what could make a society.", "Face aux récits qui instrumentalisent les affects collectifs, il s’agit d’imaginer d’autres forces capables de nous rassembler. Comme l’écrit Claire Touzard dans <em>Folie et résistance</em>, une « folie positive » tournée vers l’empathie et la solidarité peut répondre à la quête d’un commun, sans céder aux logiques d’exclusion ou de domination.": "Faced with narratives that instrumentalise collective emotions, the point is to imagine other forces capable of bringing us together. As Claire Touzard writes in <em>Folie et résistance</em>, a “positive madness” turned towards empathy and solidarity can answer the quest for a common ground, without yielding to logics of exclusion or domination.", "Cette exposition rend visible un espace-temps décalé, où se dessinent des formes d’harmonie qui questionnent les récits et les cadres dominants. Elle ouvre un dialogue sur nos manières d’habiter le monde et de le réinventer.”<br>Matthieu Laval-Boursault": "This exhibition makes visible a displaced space-time, where forms of harmony take shape that question dominant narratives and frameworks. It opens a dialogue on the ways we inhabit the world and reinvent it.”<br>Matthieu Laval-Boursault", "La scénographie du Préau a été réalisée par l’Atelier Cinetic, et l’affiche par Matthieu Laval-Boursault.": "The scenography of the Préau was designed by Atelier Cinetic, and the poster by Matthieu Laval-Boursault.", "Exposition collective avec Valentine Lederer, Toscane Thieffry, Augustin Jansem et Alexia Dreschmann": "Group exhibition with Valentine Lederer, Toscane Thieffry, Augustin Jansem and Alexia Dreschmann", "“Véridiction<br>Affirmation considérée comme vraie selon la perspective subjective d’un.e individu.e, sans prétention à l’objectivité universelle.": "“Véridiction<br>A statement considered true from an individual’s subjective perspective, with no claim to universal objectivity.", "Par l’expérimentation, la documentation ou la vraisemblance d’une idée, nous n’hésitons pas à présenter nos récits, nos argumentaires et nos images comme des vérités. Mais la vérité de ces représentations n’est souvent que le reflet d’une époque, d’un contexte, et du pouvoir qui s’exerce sur elles et leur donne sens.": "Through experimentation, documentation or the plausibility of an idea, we do not hesitate to present our stories, arguments and images as truths. But the truth of these representations is often merely the reflection of an era, a context, and of the power exercised over them that gives them meaning.", "Le discours devient vérité dès lors qu’il est accepté comme vision collective.": "Discourse becomes truth once it is accepted as a collective vision.", "La véridiction des uns engendre les illusions référentielles des autres. Qu’il s’agisse de récits matérialisés dans l’espace urbain, d’images publicitaires détournées ou de phénomènes naturels manipulés, les représentations façonnent des croyances collectives. En normalisant des esthétiques, en hiérarchisant les fictions ou en brouillant les frontières entre observation et construction, ces narrations instaurent des réalités alternatives.": "One person’s veridiction engenders other people’s referential illusions. Whether stories materialised in urban space, hijacked advertising images or manipulated natural phenomena, representations shape collective beliefs. By normalising aesthetics, ranking fictions or blurring the boundaries between observation and construction, these narratives establish alternative realities.", "L’exposition “Véridiction” propose un regard critique sur les illusions, les récits et perceptions qui déforment la réalité.”<br>Matthieu Laval-Boursault": "The exhibition “Véridiction” offers a critical look at the illusions, narratives and perceptions that distort reality.”<br>Matthieu Laval-Boursault", "La scénographie du Préau a été réalisée par l’Atelier Cinetic, et l’affiche par Dante Aufray.": "The scenography of the Préau was designed by Atelier Cinetic, and the poster by Dante Aufray.", "avec dj sets de Samogulov, Marabou, Ex bordure et beigrek": "with DJ sets by Samogulov, Marabou, Ex bordure and beigrek", "aux Amarres (75)": "at Les Amarres (75)", "avec live et dj sets de H20, Fatale Furylax et beigrek": "with live set and DJ sets by H20, Fatale Furylax and beigrek", "Autres programmations": "Other programming", "Président": "President", "Direction artistique et programmation des formats et évènements pluridisciplinaires organisés par l’association.": "Artistic direction and programming of the multidisciplinary formats and events organised by the association.", "Chute Libre est un collectif rassemblant artistes plasticien·ne·s, musicien·ne·s, vidéastes et danseur·euse·s autour de la création et de l’engagement citoyen. Dédiée au soutien de l’émergence artistique, il met en avant les projets de ses membres et collabore avec des acteurs associatifs locaux. Une dizaine d’événements organisés dans des lieux alternatifs : concerts gratuits à Place des Fêtes, DJ sets à la Tour Orion, exposition au Sample, etc.": "Chute Libre is a collective bringing together visual artists, musicians, video makers and dancers around creation and civic engagement. Dedicated to supporting emerging artists, it showcases its members’ projects and collaborates with local community organisations. About ten events held in alternative venues: free concerts at Place des Fêtes, DJ sets at the Tour Orion, an exhibition at the Sample, etc.", "Chute Libre<br>2022 – aujourd’hui": "Chute Libre<br>2022 – present", "Responsable partenariats": "Partnerships manager", "Programmation et production d’un événement pendant le festival d’Avignon (ateliers et tables rondes), en partenariat avec le festival Off Avignon et le ministère de la Culture": "Programming and production of an event during the Avignon festival (workshops and round tables), in partnership with the Festival Off Avignon and the Ministry of Culture", "Vice-Président": "Vice-President", "Programmation de tables rondes (TedX, Mardis de l’innovation et SimTalk)": "Programming of round tables (TedX, Mardis de l’innovation and SimTalk)", "Diplômé en Recherche et création à l’ENS Paris-Saclay, et en Innovation, arts et industries créatives de l’Université Paris 1 Panthéon-Sorbonne.": "Graduate in Research and Creation from ENS Paris-Saclay, and in Innovation, Arts and Creative Industries from Université Paris 1 Panthéon-Sorbonne.", "Artiste autodidacte, je travaille au croisement des arts plastiques et numériques, à travers la musique et l’image de synthèse. Ma pratique cherche à rendre perceptibles au moyen d’installation et de représentations biomorphiques des phénomènes qui échappent à l’attention du quotidien.": "Self-taught artist, I work at the crossroads of visual and digital arts, through music and computer-generated imagery. My practice seeks to make perceptible, by means of installations and biomorphic representations, phenomena that escape everyday attention."};
+  const ALT = {"Gravure sur plexiglas": "Plexiglas engraving", "Impression 3D": "3D printing", "Installation audio-réactive live": "Live audio-reactive installation", "Atelier d’expérimentation sonore, Palerme": "Sound experimentation workshop, Palermo", "Distortion : Ex Bordure, Radio Sofa – Antenne 47": "Distortion: Ex Bordure, Radio Sofa – Antenne 47", "Distortion : Ex Bordure, Radio Sofa, 19.07.25": "Distortion: Ex Bordure, Radio Sofa, 19 July 2025", "Distortion : Ex Bordure, Radio Sofa, 12.04.25": "Distortion: Ex Bordure, Radio Sofa, 12 April 2025", "Distortion : Ex Bordure, Radio Sofa, 15.02.25": "Distortion: Ex Bordure, Radio Sofa, 15 February 2025", "Affiche de l’exposition Affabulation contestataire": "Poster of the exhibition Affabulation contestataire", "Vue de l’exposition Affabulation contestataire": "View of the exhibition Affabulation contestataire", "Affiche de l’exposition Véridiction": "Poster of the exhibition Véridiction", "Vue de l’exposition Véridiction": "View of the exhibition Véridiction", "Soirée Solidarity with the Belarusian people and fight against fascism, aux Amarres": "Evening Solidarity with the Belarusian people and fight against fascism, at Les Amarres", "Affiche de la soirée Chute Libre x Wooboodoo, 16 mai 2025": "Poster of the Chute Libre x Wooboodoo evening, 16 May 2025", "Affiche du line up de la soirée de finissage, 1er mars 2025": "Poster of the closing night line-up, 1 March 2025", "Crible – extrait vidéo": "Crible – video excerpt", "Stress pré-trauma – vidéo": "Stress pré-trauma – video", "Zone d’ombre – court-métrage": "Zone d’ombre – short film", "Biomorphies – vidéo": "Biomorphies – video"};
+  const norm = s => s.replace(/\s+/g, ' ').trim();
+  const TEXT_SEL = 'p, h2, h3, figcaption, .gcap, .where, .sidebar li a, blockquote a, .page-sec p a, span.t';
+  const nodes = [...document.querySelectorAll(TEXT_SEL)].filter(el =>
+    !el.querySelector('a.btn, span.t'));            // conteneurs gérés par leurs enfants
+  nodes.forEach(el => { el.dataset.fr = norm(el.innerHTML); });
+  const attrNodes = [...document.querySelectorAll('img[alt], iframe[title]')];
+  attrNodes.forEach(el => {
+    if (el.hasAttribute('alt'))   el.dataset.frAlt   = el.getAttribute('alt');
+    if (el.hasAttribute('title')) el.dataset.frTitle = el.getAttribute('title');
   });
-});
+  const buttons = [...document.querySelectorAll('.lang button')];
+
+  function apply(lang) {
+    window.__lang = lang;
+    document.documentElement.lang = lang;
+    nodes.forEach(el => {
+      const fr = el.dataset.fr;
+      el.innerHTML = (lang === 'en' && EN[fr] !== undefined) ? EN[fr] : fr;
+    });
+    attrNodes.forEach(el => {
+      if (el.dataset.frAlt !== undefined)
+        el.setAttribute('alt', (lang === 'en' && ALT[el.dataset.frAlt]) || el.dataset.frAlt);
+      if (el.dataset.frTitle !== undefined)
+        el.setAttribute('title', (lang === 'en' && ALT[el.dataset.frTitle]) || el.dataset.frTitle);
+    });
+    buttons.forEach(x => x.classList.toggle('on', x.dataset.lang === lang));
+    window.dispatchEvent(new Event('langchange'));
+    window.dispatchEvent(new Event('resize'));       // les tentacules relisent la position des liens
+  }
+
+  buttons.forEach(b => b.addEventListener('click', () => {
+    apply(b.dataset.lang);
+    try { localStorage.setItem('lang', b.dataset.lang); } catch (e) {}
+  }));
+
+  let saved = null;
+  try { saved = localStorage.getItem('lang'); } catch (e) {}
+  window.__lang = 'fr';
+  if (saved === 'en') apply('en');
+})();
 
 /* =====================================================
    A2. Navigation entre les pages (sans rechargement)
@@ -680,21 +722,30 @@ document.querySelectorAll('.lang button').forEach(b => {
     document.body.appendChild(s);
   }
 
+  let current = null;
+  function setTitles() {
+    const en = window.__lang === 'en' && current && current.dataset.titleEn;
+    const t  = current ? (en || current.dataset.title) : '';
+    titleEl.textContent = t;
+    document.title = current ? t + ' — ' + SITE : SITE;
+  }
+
   function route() {
     const id  = decodeURIComponent(location.hash.replace(/^#\/?/, ''));
     const sec = secs.find(s => s.dataset.id === id) || null;
+    current = sec;
     document.body.classList.toggle('is-page', !!sec);
     secs.forEach(s => s.classList.toggle('on', s === sec));
     navs.forEach(a => a.classList.toggle('active', !!sec && a.dataset.page === id));
     document.querySelectorAll('.sidebar .group').forEach(g =>
       g.classList.toggle('is-current', !!sec && !!g.querySelector('a.active')));
-    titleEl.textContent = sec ? sec.dataset.title : '';
-    document.title = sec ? sec.dataset.title + ' — ' + SITE : SITE;
+    setTitles();
     page.scrollTop = 0;
     window.scrollTo(0, 0);
     if (sec && sec.querySelector('.instagram-media')) loadInstagram();
   }
   window.addEventListener('hashchange', route);
+  window.addEventListener('langchange', setTitles);
   route();
 })();
 
@@ -729,6 +780,10 @@ document.querySelectorAll('.lang button').forEach(b => {
   const DEPTH_CURVE = 1; // 1 = amincissement linéaire, >1 = les traits restent épais plus longtemps
   const depthK = z => Math.pow(Math.max(0, Math.min(1, 1 - (z - Z_NEAR) / (Z_FAR - Z_NEAR))), DEPTH_CURVE);
 
+  // ---- Réglages : bloc central (béton armé à demi détruit) ----
+  const CORE_SIZE = 0.075; // taille du bloc central (fraction de la plus petite dimension de la scène)
+  const CORE_Z    = 25;    // profondeur du bloc : les tentacules qui partent vers l'avant passent devant
+
   // ---- Réglages : morphologie des blocs ----
   const ANARCHY   = 1.0;  // 0 = blocs assez réguliers, 1 = anarchiques, 1.5 = très cassés
   const TILT      = 0.30; // inclinaison aléatoire de chaque bloc
@@ -745,7 +800,7 @@ document.querySelectorAll('.lang button').forEach(b => {
   const IRON  = '#262321';  // fers à béton
 
   const COUNT = links.length;
-  let W = 0, H = 0, cx, cy, dpr, segLen, baseR, rodW, tentacles = [], R = [], RB = [];
+  let W = 0, H = 0, cx, cy, dpr, segLen, baseR, rodW, tentacles = [], R = [], RB = [], core = null, coreR = 0;
   let hovered = -1;                       // index du lien survolé (-1 = aucun)
   const mouse  = { x: 0, y: 0, last: -99999 };
   const smooth = { x: 0, y: 0 };
@@ -845,6 +900,8 @@ document.querySelectorAll('.lang button').forEach(b => {
     segLen = m * 0.058;
     baseR  = m * 0.034;
     rodW   = Math.max(0.95, m * 0.0018);
+    coreR  = m * CORE_SIZE;
+    core   = makeCore();
     RB = Array.from({ length: SEGS }, (_, j) => baseR * Math.pow(1 - TAPER * j / (SEGS - 1), 0.8) + 2);
     R  = RB.map(v => v * CLAMP_K);           // rayon pris en compte pour rester dans le cadre
 
@@ -1124,6 +1181,129 @@ document.querySelectorAll('.lang button').forEach(b => {
   }
   const midp = (a, b) => [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2, (a[2] + b[2]) / 2];
 
+  // =====================================================
+  //  Bloc central : un morceau de béton armé à demi détruit.
+  //  Une face avant éclatée en cratère, au fond duquel on voit la grille
+  //  d'armature ; des fers sortent du cratère, des arêtes cassées et des flancs.
+  //  Les tentacules partent de ce cratère.
+  // =====================================================
+  function makeCore() {
+    const n = 7, wx = 1.0, wy = 0.82;
+    const ang = [];
+    for (let k = 0; k < n; k++) ang.push(((k + rnd(-0.3, 0.3)) / n) * Math.PI * 2);
+    ang.sort((a, b) => a - b);
+
+    const K = [], F = [], I = [];                 // arrière, bord avant (ébréché), fond du cratère
+    for (let k = 0; k < n; k++) {
+      const a = ang[k];
+      K.push([Math.cos(a) * rnd(0.85, 1.1) * wx, Math.sin(a) * rnd(0.85, 1.1) * wy, 0.9 + rnd(-0.1, 0.1)]);
+      const broken = (k === 1 || k === 4) ? rnd(0.45, 0.8) : rnd(-0.3, 0.15);   // 2 coins arrachés
+      const rf = rnd(0.78, 1.12);
+      F.push([Math.cos(a) * rf * wx, Math.sin(a) * rf * wy, -1 + broken]);
+      const ai = a + rnd(-0.25, 0.25), ri = rnd(0.38, 0.58);
+      I.push([Math.cos(ai) * ri * wx + 0.1, Math.sin(ai) * ri * wy - 0.05, -0.1 + rnd(-0.12, 0.12)]);
+    }
+    const V = [...K, ...F, ...I];
+    const cen = idx => idx.reduce((c, i) => [c[0] + V[i][0] / idx.length, c[1] + V[i][1] / idx.length, c[2] + V[i][2] / idx.length], [0, 0, 0]);
+
+    // faces + point situé du côté « air » (sert à orienter la normale)
+    const faces = [];
+    faces.push({ i: Array.from({ length: n }, (_, k) => k), ref: [0, 0, 3] });
+    for (let k = 0; k < n; k++) {
+      const i = [k, (k + 1) % n, n + (k + 1) % n, n + k], c = cen(i);
+      faces.push({ i, ref: [c[0] * 2, c[1] * 2, c[2]] });                        // flanc
+    }
+    for (let k = 0; k < n; k++) faces.push({ i: [n + k, n + (k + 1) % n, 2 * n + (k + 1) % n, 2 * n + k], ref: [0, 0, -3] }); // paroi du cratère
+    faces.push({ i: Array.from({ length: n }, (_, k) => 2 * n + k), ref: [0, 0, -3] });                            // fond
+
+    // ---- armature ----
+    const rods = [];
+    const add = (a, b, bd = 0.05) => rods.push({ a, b, bend: [rnd(-bd, bd), rnd(-bd, bd), rnd(-bd, bd)] });
+    // grille au fond du cratère (certains fers manquent)
+    [-0.2, 0.08, 0.3].forEach(y => { if (Math.random() < 0.85) add([-0.8, y + rnd(-0.04, 0.04), -0.42], [0.8, y + rnd(-0.05, 0.05), -0.42]); });
+    [-0.38, -0.05, 0.28].forEach(x => { if (Math.random() < 0.85) add([x + rnd(-0.04, 0.04), -0.68, -0.5], [x + rnd(-0.05, 0.05), 0.68, -0.5]); });
+    // fers qui sortent du cratère, terminés par un crochet
+    for (let i = 0; i < 4; i++) {
+      const a = [rnd(-0.35, 0.35), rnd(-0.3, 0.3), -0.5];
+      const b = [a[0] + rnd(-0.4, 0.4), a[1] + rnd(-0.4, 0.4), -1.1 - rnd(0.5, 1.3)];
+      add(a, b, 0.1);
+      add(b, [b[0] + rnd(-0.25, 0.25), b[1] + rnd(-0.25, 0.25), b[2] - rnd(0.05, 0.2)], 0.03);
+    }
+    // fers dégagés aux deux coins arrachés
+    [1, 4].forEach(k => {
+      const a = F[k], b = [a[0] * 1.25, a[1] * 1.25, a[2] - 0.7];
+      add(a, b, 0.08);
+      add(b, [b[0] + rnd(-0.2, 0.2), b[1] + rnd(-0.2, 0.2), b[2] - 0.15], 0.03);
+    });
+    // fers qui dépassent des flancs
+    [0, 2, 3, 5].forEach(k => {
+      const c = cen([k, (k + 1) % n, n + (k + 1) % n, n + k]);
+      const b = [c[0] * 1.5, c[1] * 1.5, c[2] + rnd(-0.3, 0.2)];
+      add([c[0] * 0.9, c[1] * 0.9, c[2]], b, 0.06);
+      add(b, [b[0] + rnd(-0.2, 0.2), b[1] + rnd(-0.2, 0.2), b[2] + rnd(-0.2, 0.2)], 0.03);
+    });
+    return { V, faces, rods, cur: null };
+  }
+
+  // transformation modèle → monde (lente oscillation du bloc, toujours vu de face / trois-quarts)
+  function coreXf(t) {
+    const a = 0.5 + 0.28 * Math.sin(t * 0.27), b = -0.22 + 0.14 * Math.sin(t * 0.21 + 1.3);
+    const ca = Math.cos(a), sa = Math.sin(a), cb = Math.cos(b), sb = Math.sin(b);
+    const S = coreR, hl = coreR * 0.75;
+    return p => {
+      const x = p[0] * S, y = p[1] * S, z = p[2] * hl;
+      const x1 = x * ca + z * sa, z1 = -x * sa + z * ca;
+      return [x1, y * cb - z1 * sb, y * sb + z1 * cb];
+    };
+  }
+
+  function addCore(items, t) {
+    if (!core) return;
+    const xf = coreXf(t);
+    core.cur = xf;
+    items.push({ k: 2, z: CORE_Z });
+    for (const r of core.rods) {
+      const c = [(r.a[0] + r.b[0]) / 2 + r.bend[0], (r.a[1] + r.b[1]) / 2 + r.bend[1], (r.a[2] + r.b[2]) / 2 + r.bend[2]];
+      pushRod(items, xf(r.a), xf(c), xf(r.b), rodW * 1.35);
+    }
+  }
+
+  function drawCore() {
+    const xf = core.cur, Wd = core.V.map(xf), vis = [];
+    for (const f of core.faces) {
+      const m = f.i.length;
+      let fx = 0, fy = 0, fz = 0, nx = 0, ny = 0, nz = 0;
+      for (let q = 0; q < m; q++) {
+        const a = Wd[f.i[q]], b = Wd[f.i[(q + 1) % m]];
+        fx += a[0]; fy += a[1]; fz += a[2];
+        nx += (a[1] - b[1]) * (a[2] + b[2]);
+        ny += (a[2] - b[2]) * (a[0] + b[0]);
+        nz += (a[0] - b[0]) * (a[1] + b[1]);
+      }
+      fx /= m; fy /= m; fz /= m;
+      const r = xf(f.ref);
+      if (nx * (r[0] - fx) + ny * (r[1] - fy) + nz * (r[2] - fz) < 0) { nx = -nx; ny = -ny; nz = -nz; }
+      if (nx * -fx + ny * -fy + nz * (-FOCAL - fz) <= 0) continue;          // face cachée
+      vis.push({ i: f.i, z: fz });
+    }
+    vis.sort((a, b) => b.z - a.z);
+    ctx.fillStyle = BLOCK;
+    ctx.strokeStyle = INK;
+    ctx.lineWidth = Math.max(0.5, 0.75 * proj(0));
+    ctx.lineJoin = 'round';
+    for (const o of vis) {
+      ctx.beginPath();
+      o.i.forEach((vi, q) => {
+        const P = Wd[vi], ps = proj(P[2]);
+        const X = cx + P[0] * ps, Y = cy + P[1] * ps;
+        if (q) ctx.lineTo(X, Y); else ctx.moveTo(X, Y);
+      });
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+    }
+  }
+
   // ---- Dessin ----
   function draw(t) {
     ctx.clearRect(0, 0, W, H);
@@ -1133,14 +1313,14 @@ document.querySelectorAll('.lang button').forEach(b => {
       const B = T.blocks;
       for (let j = 0; j < SEGS; j++) {
         buildBlock(T, j, t);
-        items.push({ k: 0, z: B[j].c[2], g: B[j] });
+        if (j > 0) items.push({ k: 0, z: B[j].c[2], g: B[j] });   // le 1er bloc est noyé dans le bloc central
       }
 
       for (let j = 0; j < SEGS; j++) {
         const g = B[j];
 
         // tiges de fer entre ce bloc et le suivant
-        if (j < SEGS - 1) {
+        if (j > 0 && j < SEGS - 1) {
           const h = B[j + 1];
           for (const rd of g.rods) {
             const a = capPoint(g, +1, rd.ka, rd.fa);
@@ -1153,7 +1333,7 @@ document.querySelectorAll('.lang button').forEach(b => {
         }
 
         // fer qui dépasse du bloc, terminé par un petit crochet
-        if (g.stub) {
+        if (g.stub && j > 0) {
           const st = g.stub, r = RB[j];
           const ca = Math.cos(st.ang), sa = Math.sin(st.ang);
           const dx = g.u[0] * ca + g.v[0] * sa, dy = g.u[1] * ca + g.v[1] * sa, dz = g.u[2] * ca + g.v[2] * sa;
@@ -1177,9 +1357,11 @@ document.querySelectorAll('.lang button').forEach(b => {
       pushRod(items, e1, [e1[0] + g.t[0] * L * 0.2, e1[1] + g.t[1] * L * 0.2, e1[2] + g.t[2] * L * 0.2], e2, rodW);
     });
 
+    addCore(items, t);
     items.sort((p, q) => q.z - p.z);        // les plus lointains d'abord
     for (const it of items) {
       if (it.k === 0) drawBlock(it.g);
+      else if (it.k === 2) drawCore();
       else drawRod(it);
     }
   }
