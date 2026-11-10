@@ -130,6 +130,8 @@
   .entry .where { color: #444; }
   .entry.long .what p { margin-top: 0.9em; }
   .entry.long .what h3 + p { margin-top: 0.3em; }
+  .entry.head { padding-bottom: 0; }                 /* titre seul, les événements suivent juste dessous */
+  .entry.cont { border-top: 0; padding-top: 0; padding-bottom: 1em; }  /* sous-événement : pas de trait, espacement entre eux */
   .gallery + .entry { margin-top: 2.2em; }   /* l'image ne touche plus le trait de séparation */
 
   .entry .what img { display: block; width: 100%; max-width: 19em; height: auto; }
@@ -581,18 +583,26 @@
             <img src="images/programmation/belarus-01.jpg" alt="Soirée Solidarity with the Belarusian people and fight against fascism, aux Amarres" loading="lazy">
           </div>
         </div>
-        <div class="entry">
+        <div class="entry head">
           <div class="what">
             <h3>Archiver le présent</h3>
+          </div>
+          <div class="where">Chute Libre</div>
+        </div>
+        <div class="entry cont">
+          <div class="what">
             <p>Finissage</p>
             <p>avec dj sets de Machwap, Yo b2b Noé, Ex bordure et beigrek</p>
             <p>à La Cité fertile (93)</p>
-            <p>26 septembre 2024</p>
+          </div>
+          <div class="where">26 septembre 2024</div>
+        </div>
+        <div class="entry cont">
+          <div class="what">
             <p>Vernissage</p>
             <p>avec dj sets de H20, Fatale Furylax et beigrek</p>
-            <p>1er mars 2025</p>
           </div>
-          <div class="where">Chute Libre<br></div>
+          <div class="where">1er mars 2025</div>
         </div>
 
         <div class="gallery">
