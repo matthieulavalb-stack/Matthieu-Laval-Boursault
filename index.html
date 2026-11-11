@@ -1193,7 +1193,7 @@
   const midp = (a, b) => [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2, (a[2] + b[2]) / 2];
 
   // =====================================================
-  //  Bloc central : un amas d'éclats de béton disloqués, traversés de fers tordus.
+  //  Bloc central : un amas d'éclats de béton disloqués mais tous soudés entre eux (aucun ne flotte), traversés de fers tordus.
   //  Les tentacules partent de cet amas.
   // =====================================================
   function makeCore() {
@@ -1214,15 +1214,23 @@
     };
 
     const V = [], faces = [], shards = [];
-    const N = 9;
+    const N = 10;
     for (let s = 0; s < N; s++) {
       const useIco = Math.random() < 0.4;
       const bv = useIco ? ico : oct, bf = useIco ? icoF : octF;
       const big = s === 0;                                          // un gros éclat reste au centre
-      const sc = big ? rnd(0.55, 0.7) : rnd(0.2, 0.5);
-      const st = [sc * rnd(0.5, 1.9), sc * rnd(0.35, 1.3), sc * rnd(0.5, 1.9)];   // éclats allongés, plats, tordus
+      const sc = big ? rnd(0.55, 0.7) : rnd(0.3, 0.6);
+      const st = [sc * rnd(0.5, 2.6), sc * rnd(0.3, 1.2), sc * rnd(0.5, 2.6)];   // éclats allongés, plats, tordus
       const ra = rnd(0, 6.28), rb = rnd(0, 6.28), rc = rnd(0, 6.28);
-      const pos = big ? [0, 0, 0] : [rnd(-1.25, 1.25), rnd(-0.95, 0.95), rnd(-1.1, 1.1)];
+      // Chaque éclat est ancré dans un éclat précédent : son centre est à l'intérieur de celui-ci → rien ne flotte.
+      let pos = [0, 0, 0];
+      if (!big) {
+        const par = shards[Math.max(0, s - 1 - Math.floor(rnd(0, 3)))];   // plutôt les derniers → l'amas s'étire en branches
+        const u = [rnd(-1, 1), rnd(-1, 1), rnd(-1, 1)], ul = (Math.abs(u[0]) + Math.abs(u[1]) + Math.abs(u[2])) || 1;   // norme L1 : le point reste dans l'octaèdre du parent
+        const loc = [u[0] / ul * par.st[0] * 0.62, u[1] / ul * par.st[1] * 0.62, u[2] / ul * par.st[2] * 0.62];
+        const w = rot(loc, par.ra, par.rb, par.rc);
+        pos = [par.pos[0] + w[0], par.pos[1] + w[1], par.pos[2] + w[2]];
+      }
       const off = V.length;
       for (const p of bv) {
         const r = rnd(0.7, 1.25);
@@ -1234,19 +1242,23 @@
         const c = [0, 1, 2].map(d => (V[i[0]][d] + V[i[1]][d] + V[i[2]][d]) / 3);
         faces.push({ i, ref: [c[0] + (c[0] - pos[0]) * 2, c[1] + (c[1] - pos[1]) * 2, c[2] + (c[2] - pos[2]) * 2] });
       }
-      shards.push({ pos, sc });
+      shards.push({ pos, sc, st, ra, rb, rc });
     }
 
-    // ---- fers : longs, tordus, dans tous les sens, certains traversent les éclats ----
+    // ---- fers : plantés dans les éclats, ils ressortent par les sommets vers l'extérieur, tordus, parfois crochetés ----
     const rods = [];
     const add = (a, b, bd = 0.05) => rods.push({ a, b, bend: [rnd(-bd, bd), rnd(-bd, bd), rnd(-bd, bd)] });
-    const dir = () => { const a = rnd(0, 6.28), z = rnd(-1, 1), r = Math.sqrt(1 - z * z); return [r * Math.cos(a), r * Math.sin(a) * 0.85, z]; };
+    const mid = [0, 1, 2].map(d => V.reduce((s, p) => s + p[d], 0) / V.length);
     for (let i = 0; i < 9; i++) {
-      const sh = shards[Math.floor(rnd(0, shards.length))], d = dir(), L = rnd(0.9, 1.9);
-      const a = [sh.pos[0] - d[0] * rnd(0.1, 0.5), sh.pos[1] - d[1] * rnd(0.1, 0.5), sh.pos[2] - d[2] * rnd(0.1, 0.5)];
-      const b = [a[0] + d[0] * L, a[1] + d[1] * L, a[2] + d[2] * L];
-      add(a, b, 0.2);
-      if (Math.random() < 0.7) add(b, [b[0] + rnd(-0.35, 0.35), b[1] + rnd(-0.35, 0.35), b[2] + rnd(-0.35, 0.35)], 0.05);   // crochet
+      const v = V[Math.floor(rnd(0, V.length))];
+      let d = [v[0] - mid[0], v[1] - mid[1], v[2] - mid[2]];
+      const dl = Math.hypot(d[0], d[1], d[2]) || 1;
+      d = [d[0] / dl + rnd(-0.35, 0.35), d[1] / dl + rnd(-0.35, 0.35), d[2] / dl + rnd(-0.35, 0.35)];
+      const L = rnd(0.5, 1.3), back = rnd(0.2, 0.5);
+      const a = [v[0] - d[0] * back, v[1] - d[1] * back, v[2] - d[2] * back];
+      const b = [v[0] + d[0] * L, v[1] + d[1] * L, v[2] + d[2] * L];
+      add(a, b, 0.12);
+      if (Math.random() < 0.7) add(b, [b[0] + rnd(-0.3, 0.3), b[1] + rnd(-0.3, 0.3), b[2] + rnd(-0.3, 0.3)], 0.04);   // crochet
     }
     return { V, faces, rods, cur: null };
   }
